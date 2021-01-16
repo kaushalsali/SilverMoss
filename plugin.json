@@ -1,0 +1,16 @@
+{
+  "slug": "SilverMoss",
+  "name": "SilverMoss",
+  "version": "1.0.0",
+  "license": "proprietary",
+  "brand": "SilverMoss",
+  "author": "Kaushal Sali",
+  "authorEmail": "salikaushal@gmail.com",
+  "authorUrl": "",
+  "pluginUrl": "",
+  "manualUrl": "",
+  "sourceUrl": "https://github.com/kaushalsali/SilverMoss.git",
+  "donateUrl": "",
+  "changelogUrl": "",
+  "modules": []
+}
