@@ -14,12 +14,16 @@ RaagEngine::RaagEngine() :
 
 void RaagEngine::initLastNotes() {
     for (auto it = m_aroha.crbegin(); it != m_aroha.crend(); it++) {
-        if (!it->second.empty())
+        if (!it->second.empty()) {
             m_lastNoteAroha = it->first;
+            break;
+        }
     }
     for (auto it = m_avroha.cbegin(); it != m_avroha.cend(); it++) {
-        if (!it->second.empty())
+        if (!it->second.empty()) {
             m_lastNoteAvroha = it->first;
+            break;
+        }
     }
 }
 
