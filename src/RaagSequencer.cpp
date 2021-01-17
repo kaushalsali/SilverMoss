@@ -16,33 +16,34 @@ RaagSequencer::RaagSequencer() {
 
 void RaagSequencer::process(const Module::ProcessArgs &args) {
 
-    // Set voltage for semitone outputs
+    // Set voltage for output ports
     for (int i=0; i<12; i++) {
         outputs[OUT_AROHA_SA + i].setVoltage(static_cast<float>(i) / 12.0f);
         outputs[OUT_AVROHA_SA + i].setVoltage(static_cast<float>(i) / 12.0f);
     }
 
-    // Update connections
+    // Update NoteGraph(s)
     if (!m_isFirstStep)
         updateConnections();
     else
         m_isFirstStep = false;
 
     // Step if triggered
-    if (inputs[IN_TRIGGER].isConnected() && m_trigger.process(inputs[IN_TRIGGER].getVoltage())) {//
+    if (inputs[IN_TRIGGER].isConnected() && m_trigger.process(inputs[IN_TRIGGER].getVoltage())) {
+
+        // Get Direction
         auto directionUp = true;
         if (inputs[IN_DIRECTION].isConnected()) {
             directionUp = inputs[IN_DIRECTION].getVoltage() >= 5.0f;
-
         }
 
         //DEBUG("direction = %f", inputs[IN_DIRECTION].getVoltage());
         DEBUG("\n-----------Aroha\"-----------\n%s", m_raagEngine.getAroha().printGraph().c_str());
         DEBUG("\n-----------Avroha\"-----------\n%s", m_raagEngine.getAvroha().printGraph().c_str());
-
         DEBUG("\nDirection: %i\n", static_cast<int>(directionUp));
         DEBUG("\nNote Played: %s\n", note_map.at(m_raagEngine.getCurrentNote()).c_str());
 
+        // Note backtracking
         int numTries = 3;       //TODO: Improve logic
         bool success = false;
         while(!success && numTries) {
@@ -150,7 +151,6 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
     }
 
     addInput(createInputCentered<PJ301MPort>(mm2px(Vec(150.f/2, 10 + 2 * 10)), module, RaagSequencer::IN_TRIGGER));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(150/2, 10 + 4 * 10)), module, RaagSequencer::IN_GATE));
     addInput(createInputCentered<PJ301MPort>(mm2px(Vec(150/2, 10 + 6 * 10)), module, RaagSequencer::IN_DIRECTION));
     addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(150/2, 10 + 8 * 10)), module, RaagSequencer::OUT_VOCT));
 

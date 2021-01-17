@@ -10,6 +10,8 @@
 struct RaagSequencer : Module {
 public:
     enum ParamIds {
+        PARAM_OCTAVE_MIN,
+        PARAM_OCTAVE_MAX,
         NUM_PARAMS
     };
     enum InputIds {
@@ -17,7 +19,6 @@ public:
         IN_AVROHA_SA = IN_AROHA_SA + 12,
         IN_TRIGGER = IN_AVROHA_SA + 12,
         IN_DIRECTION,
-        IN_GATE,
         NUM_INPUTS
     };
     enum OutputIds {
