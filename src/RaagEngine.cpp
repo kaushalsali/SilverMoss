@@ -47,6 +47,10 @@ int RaagEngine::getTransposition() const {
     return m_transposition;
 }
 
+void RaagEngine::setTransposition(int semitone) {
+    m_transposition = semitone;
+}
+
 unsigned RaagEngine::getOctave() const {
     return m_octave;
 }
