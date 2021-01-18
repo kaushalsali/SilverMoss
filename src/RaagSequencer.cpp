@@ -4,16 +4,14 @@
 RaagSequencer::RaagSequencer() {
     config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
     configParam(PARAM_TRANSPOSE, -11, 11, 0, "Transpose");
+    configParam(PARAM_OCTAVE_MIN, -2, 8, 4, "Octave Min");
+    configParam(PARAM_OCTAVE_MAX, -2, 8, 4, "Octave Max");
+
     for (int i=0; i<numArohaInputPorts; i++) {
         m_arohaInputLastValues[i] = -1.f;   // -1 indicates that note has been disconnected from the graph
         m_avrohaInputLastValues[i] = -1.f;
     }
     m_isFirstStep = true;
-    m_raagEngine.setOctaveRange(4,5);
-
-    DEBUG("\n-----------Aroha\"-----------\n%s", m_raagEngine.getAroha().printGraph().c_str());
-    DEBUG("\n-----------Avroha\"-----------\n%s", m_raagEngine.getAvroha().printGraph().c_str());
-
 }
 
 void RaagSequencer::process(const Module::ProcessArgs &args) {
@@ -35,9 +33,16 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
 
         // Set Transposition. This is done on trigger for performance
         auto transposeSemitone = static_cast<int>(params[PARAM_TRANSPOSE].getValue());
-        if (transposeSemitone != m_lastTransposeValue) {
+        if (transposeSemitone != m_lastTransposeValue) { //TODO: Use getTransposition instead
             m_raagEngine.setTransposition(transposeSemitone);
             m_lastTransposeValue = transposeSemitone;
+        }
+
+        // Set octave ranges. This is done on trigger for performance
+        auto octaveMin = static_cast<int>(params[PARAM_OCTAVE_MIN].getValue());
+        auto octaveMax = static_cast<int>(params[PARAM_OCTAVE_MAX].getValue());
+        if (octaveMin != m_raagEngine.getMinOctave() or octaveMax != m_raagEngine.getMaxOctave()) {
+            m_raagEngine.setOctaveRange(octaveMin, octaveMax);
         }
 
         // Get Direction
@@ -76,10 +81,8 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         DEBUG("Midi: %d", midi);
         DEBUG("Octave: %d", m_raagEngine.getOctave());
         DEBUG("-------------");
-//
 //        auto freq = midiToFreq(midi);
 //        DEBUG("freq: %f", freq);
-//
 //        auto volt = freqToVolt(freq);
 //        DEBUG("volt: %f", volt);
 //        DEBUG("----------");
@@ -166,9 +169,11 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
     }
 
     addInput(createInputCentered<PJ301MPort>(mm2px(Vec(150.f/2, 10 + 2 * 10)), module, RaagSequencer::IN_TRIGGER));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(150.f/2, 10 + 6 * 10)), module, RaagSequencer::IN_DIRECTION));
-    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(150.f/2, 10 + 8 * 10)), module, RaagSequencer::OUT_VOCT));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(150.f/2, 10 + 8 * 10)), module, RaagSequencer::IN_DIRECTION));
+    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(150.f/2, 10 + 10 * 10)), module, RaagSequencer::OUT_VOCT));
 
     addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(150.f/2, 10 + 4 * 10)), module, RaagSequencer::PARAM_TRANSPOSE));
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(150.f/2 - 6.5, 10 + 6 * 10)), module, RaagSequencer::PARAM_OCTAVE_MIN));
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(150.f/2 + 6.5, 10 + 6 * 10)), module, RaagSequencer::PARAM_OCTAVE_MAX));
     //addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(15.24, 25.81)), module, RaagSequencer::BLINK_LIGHT));
 }
