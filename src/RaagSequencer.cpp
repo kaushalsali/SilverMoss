@@ -3,11 +3,13 @@
 
 RaagSequencer::RaagSequencer() {
     config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-    for (int i=0; i<Note::TOTAL; i++) {
+    configParam(PARAM_TRANSPOSE, -11, 11, 0, "Transpose");
+    for (int i=0; i<numArohaInputPorts; i++) {
         m_arohaInputLastValues[i] = -1.f;   // -1 indicates that note has been disconnected from the graph
         m_avrohaInputLastValues[i] = -1.f;
     }
     m_isFirstStep = true;
+    m_raagEngine.setOctaveRange(4,5);
 
     DEBUG("\n-----------Aroha\"-----------\n%s", m_raagEngine.getAroha().printGraph().c_str());
     DEBUG("\n-----------Avroha\"-----------\n%s", m_raagEngine.getAvroha().printGraph().c_str());
@@ -30,6 +32,13 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
 
     // Step if triggered
     if (inputs[IN_TRIGGER].isConnected() && m_trigger.process(inputs[IN_TRIGGER].getVoltage())) {
+
+        // Set Transposition. This is done on trigger for performance
+        auto transposeSemitone = static_cast<int>(params[PARAM_TRANSPOSE].getValue());
+        if (transposeSemitone != m_lastTransposeValue) {
+            m_raagEngine.setTransposition(transposeSemitone);
+            m_lastTransposeValue = transposeSemitone;
+        }
 
         // Get Direction
         auto directionUp = true;
@@ -63,7 +72,8 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
 //        DEBUG("note: %s", note_map.at(m_m_raagEngine.getCurrentNote()).c_str());
 //
         auto midi = m_raagEngine.getCurrentNoteAsMidi();
-        DEBUG("midi: %d", midi);
+        DEBUG("Transposition: %d", m_raagEngine.getTransposition());
+        DEBUG("Midi: %d", midi);
         DEBUG("Octave: %d", m_raagEngine.getOctave());
         DEBUG("-------------");
 //
@@ -90,8 +100,10 @@ void RaagSequencer::updateConnections() {
     for (int i=0; i<numArohaInputPorts; i++) {
         // For Aroha
         if (inputs[IN_AROHA_SA + i].isConnected()) {
+            //DEBUG("\n--------here--1----------------\n");
             auto volt = inputs[IN_AROHA_SA + i].getVoltage();
             if (volt != m_arohaInputLastValues[i]) {
+
                 auto arohaFromNote = static_cast<Note>(volt * 12);
                 auto arohaToNote = static_cast<Note>(i%12);
                 DEBUG("\nVoltage: %f   Connect: %s to %s\n", volt, note_map.at(arohaFromNote).c_str(), note_map.at(arohaToNote).c_str());
@@ -157,6 +169,6 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
     addInput(createInputCentered<PJ301MPort>(mm2px(Vec(150.f/2, 10 + 6 * 10)), module, RaagSequencer::IN_DIRECTION));
     addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(150.f/2, 10 + 8 * 10)), module, RaagSequencer::OUT_VOCT));
 
-    //addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(15.24, 46.063)), module, RaagSequencer::PITCH_PARAM));
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(150.f/2, 10 + 4 * 10)), module, RaagSequencer::PARAM_TRANSPOSE));
     //addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(15.24, 25.81)), module, RaagSequencer::BLINK_LIGHT));
 }
