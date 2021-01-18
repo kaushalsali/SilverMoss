@@ -58,7 +58,6 @@ private:
     dsp::SchmittTrigger m_trigger;
     std::array<float, numArohaInputPorts> m_arohaInputLastValues;
     std::array<float, numArohaInputPorts> m_avrohaInputLastValues;
-    int m_lastTransposeValue = 0;
     bool m_isFirstStep = true;
 
 };

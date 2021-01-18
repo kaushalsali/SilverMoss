@@ -33,9 +33,8 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
 
         // Set Transposition. This is done on trigger for performance
         auto transposeSemitone = static_cast<int>(params[PARAM_TRANSPOSE].getValue());
-        if (transposeSemitone != m_lastTransposeValue) { //TODO: Use getTransposition instead
+        if (transposeSemitone != m_raagEngine.getTransposition()) {
             m_raagEngine.setTransposition(transposeSemitone);
-            m_lastTransposeValue = transposeSemitone;
         }
 
         // Set octave ranges. This is done on trigger for performance
