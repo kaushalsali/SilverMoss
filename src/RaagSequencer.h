@@ -32,11 +32,11 @@ public:
     };
 
     static float freqToVolt(float frequencyInHz, bool isLFO=false) {
-        return std::log2(frequencyInHz/ (isLFO ? 2.0f : dsp::FREQ_C4));
+        return std::log2(frequencyInHz/ (isLFO ? 2.0f : dsp::FREQ_A4));
     }
 
     static float voltToFreq(float frequencyInHz, bool isLFO=false) {
-        return std::log2(frequencyInHz/ (isLFO ? 2.0f : dsp::FREQ_C4));
+        return std::log2(frequencyInHz/ (isLFO ? 2.0f : dsp::FREQ_A4));
     }
 
     static double midiToFreq(int midiNoteNumber) {
