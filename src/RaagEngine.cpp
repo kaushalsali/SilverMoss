@@ -40,7 +40,7 @@ Note RaagEngine::getCurrentNote() const {
 }
 
 int RaagEngine::getCurrentNoteAsMidi() const {
-    return m_octave * 12 + static_cast<int>(m_currentNote) + m_transposition;
+    return (m_octave+1) * 12 + static_cast<int>(m_currentNote) + m_transposition;
 }
 
 int RaagEngine::getTransposition() const {
