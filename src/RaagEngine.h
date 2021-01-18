@@ -20,9 +20,11 @@ public:
     Note getCurrentNote() const;
     int getCurrentNoteAsMidi() const;
     int getTransposition() const;
-    unsigned getOctave() const;
+    int getOctave() const;
+    int getMinOctave() const;
+    int getMaxOctave() const;
     void setTransposition(int semitone);
-    void setOctaveRange(unsigned min, unsigned max);
+    void setOctaveRange(int min, int max);
     void incOctave();
     void decOctave();
 

@@ -51,13 +51,14 @@ void RaagEngine::setTransposition(int semitone) {
     m_transposition = semitone;
 }
 
-unsigned RaagEngine::getOctave() const {
+int RaagEngine::getOctave() const {
     return m_octave;
 }
 
-void RaagEngine::setOctaveRange(unsigned int min, unsigned int max) {
+void RaagEngine::setOctaveRange(int min, int max) {
+    //TODO: This method should allow for setting octaves with offset (i.e. starting from arbitrary note instead of C)
     m_minOctave = min;
-    m_maxOctave = max;
+    m_maxOctave = std::max(min, max);   //TODO: Is this a good way to handle this?
 }
 
 void RaagEngine::reset() {  //TODO: Complete. Clear RaagEngine objects ?
@@ -109,4 +110,12 @@ void RaagEngine::decOctave() {
     m_octave--;
     if (m_octave < m_minOctave)
         m_octave = m_maxOctave;
+}
+
+int RaagEngine::getMinOctave() const {
+    return m_minOctave;
+}
+
+int RaagEngine::getMaxOctave() const {
+    return m_maxOctave;
 }
