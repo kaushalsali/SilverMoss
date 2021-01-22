@@ -43,6 +43,7 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         if (octaveMin != m_raagEngine.getMinOctave() or octaveMax != m_raagEngine.getMaxOctave()) {
             m_raagEngine.setOctaveRange(octaveMin, octaveMax);
         }
+//        DEBUG("\nMin: %d %d\nMax: %d %d\nCurrent: %d", octaveMin, m_raagEngine.getMinOctave(), octaveMax, m_raagEngine.getMaxOctave(), m_raagEngine.getCurrentOctave());
 
         // Get Direction
         auto directionUp = true;
@@ -50,11 +51,10 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
             directionUp = inputs[IN_DIRECTION].getVoltage() >= 5.0f;
         }
 
-        //DEBUG("direction = %f", inputs[IN_DIRECTION].getVoltage());
-        DEBUG("\n-----------Aroha\"-----------\n%s", m_raagEngine.getAroha().printGraph().c_str());
-        DEBUG("\n-----------Avroha\"-----------\n%s", m_raagEngine.getAvroha().printGraph().c_str());
-        DEBUG("Direction: %i", static_cast<int>(directionUp));
-        DEBUG("Note Played: %s", note_map.at(m_raagEngine.getCurrentNote()).c_str());
+//        DEBUG("\n-----------Aroha\"-----------\n%s", m_raagEngine.getAroha().printGraph().c_str());
+//        DEBUG("\n-----------Avroha\"-----------\n%s", m_raagEngine.getAvroha().printGraph().c_str());
+//        DEBUG("Direction: %i", static_cast<int>(directionUp));
+//        DEBUG("Note Played: %s", note_map.at(m_raagEngine.getCurrentNote()).c_str());
 
         // Note backtracking
         int numTries = 3;       //TODO: Improve logic
@@ -75,11 +75,11 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
 //            DEBUG("Step Failed");
 //        DEBUG("note: %s", note_map.at(m_m_raagEngine.getCurrentNote()).c_str());
 //
-        auto midi = m_raagEngine.getCurrentNoteAsMidi();
-        DEBUG("Transposition: %d", m_raagEngine.getTransposition());
-        DEBUG("Midi: %d", midi);
-        DEBUG("Octave: %d", m_raagEngine.getOctave());
-        DEBUG("-------------");
+//        DEBUG("Transposition: %d", m_raagEngine.getTransposition());
+//        auto midi = m_raagEngine.getCurrentNoteAsMidi();
+//        DEBUG("Midi: %d", midi);
+//        DEBUG("Octave: %d", m_raagEngine.getOctave());
+//        DEBUG("-------------");
 //        auto freq = midiToFreq(midi);
 //        DEBUG("freq: %f", freq);
 //        auto volt = freqToVolt(freq);
@@ -108,7 +108,7 @@ void RaagSequencer::updateConnections() {
 
                 auto arohaFromNote = static_cast<Note>(volt * 12);
                 auto arohaToNote = static_cast<Note>(i%12);
-                DEBUG("\nVoltage: %f   Connect: %s to %s\n", volt, note_map.at(arohaFromNote).c_str(), note_map.at(arohaToNote).c_str());
+//                DEBUG("\nVoltage: %f   Connect: %s to %s\n", volt, note_map.at(arohaFromNote).c_str(), note_map.at(arohaToNote).c_str());
                 aroha.connect(arohaFromNote, arohaToNote);
                 m_raagEngine.initLastNotes();
                 m_arohaInputLastValues[i] = volt;
@@ -118,7 +118,7 @@ void RaagSequencer::updateConnections() {
             if (m_arohaInputLastValues[i] != -1.f) {  // if note has not yet been disconnected from the graph
                 auto arohaFromNote = static_cast<Note>(m_arohaInputLastValues[i] * 12);
                 auto arohaToNote = static_cast<Note>(i%12);
-                DEBUG("\nDisconnect: %s to %s\n", note_map.at(arohaFromNote).c_str(), note_map.at(arohaToNote).c_str());
+//                DEBUG("\nDisconnect: %s to %s\n", note_map.at(arohaFromNote).c_str(), note_map.at(arohaToNote).c_str());
                 aroha.disconnect(arohaFromNote, arohaToNote);
                 m_raagEngine.initLastNotes();
                 m_arohaInputLastValues[i] = -1.f;
@@ -158,21 +158,21 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
 
     for (int i=0; i<12; i++) {
         // Aroha
-        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(15.24, 10 + i * 10)), module, RaagSequencer::IN_AROHA_SA + i + 12));
-        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(35.24, 10 + i * 10)), module, RaagSequencer::IN_AROHA_SA + i));
-        addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(55.24, 10 + i * 10)), module, RaagSequencer::OUT_AROHA_SA + i));
+        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(15, 10 + i * 10)), module, RaagSequencer::IN_AROHA_SA + i + 12));
+        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(30, 10 + i * 10)), module, RaagSequencer::IN_AROHA_SA + i));
+        addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(45, 10 + i * 10)), module, RaagSequencer::OUT_AROHA_SA + i));
         // Avroha
-        addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(150 - 55.24, 9.5 + i * 10)), module, RaagSequencer::OUT_AVROHA_SA + i));
-        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(150 - 35.24, 10 + i * 10)), module, RaagSequencer::IN_AVROHA_SA + i));
-        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(150 - 15.24, 10 + i * 10)), module, RaagSequencer::IN_AVROHA_SA + i + 12));
+        addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(152.4f - 45, 9.5 + i * 10)), module, RaagSequencer::OUT_AVROHA_SA + i));
+        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f - 30, 10 + i * 10)), module, RaagSequencer::IN_AVROHA_SA + i));
+        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f - 15, 10 + i * 10)), module, RaagSequencer::IN_AVROHA_SA + i + 12));
     }
 
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(150.f/2, 10 + 2 * 10)), module, RaagSequencer::IN_TRIGGER));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(150.f/2, 10 + 8 * 10)), module, RaagSequencer::IN_DIRECTION));
-    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(150.f/2, 10 + 10 * 10)), module, RaagSequencer::OUT_VOCT));
-
-    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(150.f/2, 10 + 4 * 10)), module, RaagSequencer::PARAM_TRANSPOSE));
-    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(150.f/2 - 6.5, 10 + 6 * 10)), module, RaagSequencer::PARAM_OCTAVE_MIN));
-    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(150.f/2 + 6.5, 10 + 6 * 10)), module, RaagSequencer::PARAM_OCTAVE_MAX));
+    // Control Section
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 1 * 10)), module, RaagSequencer::IN_TRIGGER));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 3 * 10)), module, RaagSequencer::IN_DIRECTION));
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(152.4f/2, 10 + 5.5 * 10)), module, RaagSequencer::PARAM_TRANSPOSE));
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(152.4f/2 - 8, 10 + 7 * 10)), module, RaagSequencer::PARAM_OCTAVE_MIN));
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(152.4f/2 + 8, 10 + 7 * 10)), module, RaagSequencer::PARAM_OCTAVE_MAX));
+    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 10 * 10)), module, RaagSequencer::OUT_VOCT));
     //addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(15.24, 25.81)), module, RaagSequencer::BLINK_LIGHT));
 }

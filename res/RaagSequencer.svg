@@ -15,7 +15,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.2 5c3e80d, 2017-08-06"
-   sodipodi:docname="MyModule.svg">
+   sodipodi:docname="RaagSequencer.svg">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.98994949"
-     inkscape:cx="140.67693"
-     inkscape:cy="191.1767"
+     inkscape:zoom="1.4"
+     inkscape:cx="277.94426"
+     inkscape:cy="272.20412"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -42,7 +42,17 @@
      inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:snap-bbox-midpoints="true"
-     inkscape:snap-nodes="false" />
+     inkscape:snap-nodes="false"
+     showguides="false">
+    <inkscape:grid
+       type="xygrid"
+       id="grid818" />
+    <sodipodi:guide
+       position="109.04597,141.65288"
+       orientation="0,1"
+       id="guide820"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -67,9 +77,84 @@
        height="128.5"
        x="5.9211732e-17"
        y="168.49997" />
+    <rect
+       style="opacity:0.994;fill:#b3b3b3;fill-opacity:1;stroke:#020200;stroke-width:0;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.95121951"
+       id="rect814"
+       width="10.294999"
+       height="128.61371"
+       x="102.53576"
+       y="168.41483" />
+    <rect
+       y="167.88428"
+       x="39.568962"
+       height="129.40753"
+       width="10.294999"
+       id="rect816"
+       style="opacity:0.994;fill:#b3b3b3;fill-opacity:1;stroke:#020200;stroke-width:0;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.95121951" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:2.34997702px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.05874942"
+       x="77.609787"
+       y="248.38602"
+       id="text824"
+       transform="scale(0.93453979,1.0700454)"><tspan
+         sodipodi:role="line"
+         id="tspan822"
+         x="77.609787"
+         y="248.38602"
+         style="stroke-width:0.05874942">V/OCT</tspan></text>
+    <text
+       transform="scale(0.93453979,1.0700454)"
+       id="text828"
+       y="230.57741"
+       x="74.898628"
+       style="font-style:normal;font-weight:normal;font-size:2.34997702px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.05874942"
+       xml:space="preserve"><tspan
+         style="stroke-width:0.05874942"
+         y="230.57741"
+         x="74.898628"
+         sodipodi:role="line"
+         id="tspan830">DIRECTION</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:2.34997702px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.05874942"
+       x="75.459106"
+       y="176.19389"
+       id="text836"
+       transform="scale(0.93453979,1.0700454)"><tspan
+         sodipodi:role="line"
+         x="75.459106"
+         y="176.19389"
+         style="stroke-width:0.05874942"
+         id="tspan838">TRIGGER</tspan></text>
+    <text
+       transform="scale(0.93453979,1.0700454)"
+       id="text844"
+       y="207.61325"
+       x="72.496445"
+       style="font-style:normal;font-weight:normal;font-size:2.34997702px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.05874942"
+       xml:space="preserve"><tspan
+         style="stroke-width:0.05874942"
+         y="207.61325"
+         x="72.496445"
+         sodipodi:role="line"
+         id="tspan846">OCTAVE RANGE</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:2.34997702px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.05874942"
+       x="74.452393"
+       y="191.85805"
+       id="text852"
+       transform="scale(0.93453979,1.0700454)"><tspan
+         sodipodi:role="line"
+         x="74.452393"
+         y="191.85805"
+         style="stroke-width:0.05874942"
+         id="tspan854">TRANSPOSE</tspan></text>
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
-     inkscape:label="components" />
+     inkscape:label="components"
+     sodipodi:insensitive="true" />
 </svg>
