@@ -24,6 +24,7 @@ public:
         IN_AVROHA_SA = IN_AROHA_SA + numArohaInputPorts,
         IN_TRIGGER = IN_AVROHA_SA + numArohaInputPorts,
         IN_DIRECTION,
+        IN_RESET,
         NUM_INPUTS
     };
     enum OutputIds {
@@ -56,6 +57,7 @@ private:
 
     RaagEngine m_raagEngine;
     dsp::SchmittTrigger m_trigger;
+    dsp::SchmittTrigger m_triggerReset;
     std::array<Note, numArohaInputPorts> m_arohaInputLastNotes;
     std::array<Note, numArohaInputPorts> m_avrohaInputLastNotes;
     bool m_isFirstStep = true;

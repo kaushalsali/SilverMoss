@@ -27,6 +27,12 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
     else
         m_isFirstStep = false;
 
+
+    // Reset if triggered
+    if (inputs[IN_RESET].isConnected() && m_triggerReset.process(inputs[IN_RESET].getVoltage())) {
+        m_raagEngine.setCurrentNote(Note::Sa);
+    }
+
     // Step if triggered
     if (inputs[IN_TRIGGER].isConnected() && m_trigger.process(inputs[IN_TRIGGER].getVoltage())) {
 
@@ -42,7 +48,6 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         if (octaveMin != m_raagEngine.getMinOctave() or octaveMax != m_raagEngine.getMaxOctave()) {
             m_raagEngine.setOctaveRange(octaveMin, octaveMax);
         }
-
 
         // Get Direction
         auto directionUp = true;
@@ -69,12 +74,6 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
             numTries--;
         }
 
-//        if (success)
-//            DEBUG("StepUp");
-//        else
-//            DEBUG("Step Failed");
-//        DEBUG("note: %s", note_map.at(m_m_raagEngine.getCurrentNote()).c_str());
-//
 //        DEBUG("Transposition: %d", m_raagEngine.getTransposition());
 //        auto midi = m_raagEngine.getCurrentNoteAsMidi();
 //        DEBUG("Midi: %d", midi);
@@ -188,7 +187,8 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
 
     // Control Section
     addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 1 * 10)), module, RaagSequencer::IN_TRIGGER));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 3 * 10)), module, RaagSequencer::IN_DIRECTION));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 2.5 * 10)), module, RaagSequencer::IN_DIRECTION));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 4 * 10)), module, RaagSequencer::IN_RESET));
     addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(152.4f/2, 10 + 5.5 * 10)), module, RaagSequencer::PARAM_TRANSPOSE));
     addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(152.4f/2 - 8, 10 + 7 * 10)), module, RaagSequencer::PARAM_OCTAVE_MIN));
     addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(152.4f/2 + 8, 10 + 7 * 10)), module, RaagSequencer::PARAM_OCTAVE_MAX));
