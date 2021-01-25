@@ -56,8 +56,8 @@ private:
 
     RaagEngine m_raagEngine;
     dsp::SchmittTrigger m_trigger;
-    std::array<float, numArohaInputPorts> m_arohaInputLastValues;
-    std::array<float, numArohaInputPorts> m_avrohaInputLastValues;
+    std::array<Note, numArohaInputPorts> m_arohaInputLastNotes;
+    std::array<Note, numArohaInputPorts> m_avrohaInputLastNotes;
     bool m_isFirstStep = true;
 
 };

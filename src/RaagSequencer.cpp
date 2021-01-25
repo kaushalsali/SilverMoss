@@ -8,14 +8,13 @@ RaagSequencer::RaagSequencer() {
     configParam(PARAM_OCTAVE_MAX, -2, 8, 4, "Octave Max");
 
     for (int i=0; i<numArohaInputPorts; i++) {
-        m_arohaInputLastValues[i] = -1.f;   // -1 indicates that note has been disconnected from the graph
-        m_avrohaInputLastValues[i] = -1.f;
+        m_arohaInputLastNotes[i] = Note::NONE;
+        m_avrohaInputLastNotes[i] = Note::NONE;
     }
     m_isFirstStep = true;
 }
 
 void RaagSequencer::process(const Module::ProcessArgs &args) {
-
     // Set voltage for output ports
     for (int i=0; i<12; i++) {
         outputs[OUT_AROHA_SA + i].setVoltage(static_cast<float>(i) / 12.0f);
@@ -43,7 +42,7 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         if (octaveMin != m_raagEngine.getMinOctave() or octaveMax != m_raagEngine.getMaxOctave()) {
             m_raagEngine.setOctaveRange(octaveMin, octaveMax);
         }
-//        DEBUG("\nMin: %d %d\nMax: %d %d\nCurrent: %d", octaveMin, m_raagEngine.getMinOctave(), octaveMax, m_raagEngine.getMaxOctave(), m_raagEngine.getCurrentOctave());
+
 
         // Get Direction
         auto directionUp = true;
@@ -51,10 +50,11 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
             directionUp = inputs[IN_DIRECTION].getVoltage() >= 5.0f;
         }
 
-//        DEBUG("\n-----------Aroha\"-----------\n%s", m_raagEngine.getAroha().printGraph().c_str());
-//        DEBUG("\n-----------Avroha\"-----------\n%s", m_raagEngine.getAvroha().printGraph().c_str());
-//        DEBUG("Direction: %i", static_cast<int>(directionUp));
-//        DEBUG("Note Played: %s", note_map.at(m_raagEngine.getCurrentNote()).c_str());
+        DEBUG("\n-----------Aroha\"-----------\n%s", m_raagEngine.getAroha().printGraph().c_str());
+        DEBUG("\n-----------Avroha\"-----------\n%s", m_raagEngine.getAvroha().printGraph().c_str());
+        DEBUG("Direction: %i", static_cast<int>(directionUp));
+        DEBUG("Note Played: %s", note_map.at(m_raagEngine.getCurrentNote()).c_str());
+        DEBUG("Octave\nMin: %d %d\nMax: %d %d\nCurrent: %d", octaveMin, m_raagEngine.getMinOctave(), octaveMax, m_raagEngine.getMaxOctave(), m_raagEngine.getCurrentOctave());
 
         // Note backtracking
         int numTries = 3;       //TODO: Improve logic
@@ -102,45 +102,64 @@ void RaagSequencer::updateConnections() {
     for (int i=0; i<numArohaInputPorts; i++) {
         // For Aroha
         if (inputs[IN_AROHA_SA + i].isConnected()) {
-            //DEBUG("\n--------here--1----------------\n");
+//            DEBUG("\n--------here--1----------------\n");
             auto volt = inputs[IN_AROHA_SA + i].getVoltage();
-            if (volt != m_arohaInputLastValues[i]) {
+            //volt = volt - static_cast<int>(volt);   // wrap to range 0V to 0.916V
+            volt = std::min(std::max(0.f, volt), static_cast<float>(Note::Ni)/12); // limit range from 0V to 0.916V
+            auto arohaFromNote = static_cast<Note>(static_cast<int>(volt * 12));
+            //TODO: Handle voltage to Note conversion more elegantly
 
-                auto arohaFromNote = static_cast<Note>(volt * 12);
+            if (arohaFromNote != m_arohaInputLastNotes[i]) {
                 auto arohaToNote = static_cast<Note>(i%12);
-//                DEBUG("\nVoltage: %f   Connect: %s to %s\n", volt, note_map.at(arohaFromNote).c_str(), note_map.at(arohaToNote).c_str());
+
+                if (m_arohaInputLastNotes[i] != Note::NONE) {  // Disconnect previous note if present
+                    auto arohaOldFromNote = static_cast<Note>(m_arohaInputLastNotes[i]);
+                    aroha.disconnect(arohaOldFromNote, arohaToNote);
+//                    DEBUG("\nDisconnect: %s to %s\n", note_map.at(arohaOldFromNote).c_str(), note_map.at(arohaToNote).c_str());
+                }
+
+//                DEBUG("\nVoltage: %d   Connect: %s to %s\n", volt, note_map.at(arohaNewFromNote).c_str(), note_map.at(arohaToNote).c_str());
                 aroha.connect(arohaFromNote, arohaToNote);
                 m_raagEngine.initLastNotes();
-                m_arohaInputLastValues[i] = volt;
+                m_arohaInputLastNotes[i] = arohaFromNote;
+
             }
         }
         else {
-            if (m_arohaInputLastValues[i] != -1.f) {  // if note has not yet been disconnected from the graph
-                auto arohaFromNote = static_cast<Note>(m_arohaInputLastValues[i] * 12);
+            if (m_arohaInputLastNotes[i] != Note::NONE) {  // if note has not yet been disconnected from the graph
+                auto arohaFromNote = static_cast<Note>(m_arohaInputLastNotes[i]);
                 auto arohaToNote = static_cast<Note>(i%12);
-//                DEBUG("\nDisconnect: %s to %s\n", note_map.at(arohaFromNote).c_str(), note_map.at(arohaToNote).c_str());
                 aroha.disconnect(arohaFromNote, arohaToNote);
                 m_raagEngine.initLastNotes();
-                m_arohaInputLastValues[i] = -1.f;
+                m_arohaInputLastNotes[i] = Note::NONE;
+//                DEBUG("\nDisconnect: %s to %s\n", note_map.at(arohaFromNote).c_str(), note_map.at(arohaToNote).c_str());
             }
         }
 
         // For Avroha
         if (inputs[IN_AVROHA_SA + i].isConnected()) {
             auto volt = inputs[IN_AVROHA_SA + i].getVoltage();
-            if (volt != m_avrohaInputLastValues[i]) {
-                auto avrohaFromNote = static_cast<Note>(volt * 12);
+            // volt = volt - static_cast<int>(volt);   // wrap to range 0V to 1V
+            volt = std::min(std::max(0.f, volt), static_cast<float>(Note::Ni)/12); // limit range from 0V to 0.916V
+            auto avrohaFromNote = static_cast<Note>(static_cast<int>(volt * 12));
+            //TODO: Handle voltage to Note conversion more elegantly
+
+            if (avrohaFromNote != m_avrohaInputLastNotes[i]) {
                 auto avrohaToNote = static_cast<Note>(i%12);
+                if (m_avrohaInputLastNotes[i] != Note::NONE) {  // Disconnect previous note if present
+                    auto avrohaOldFromNote = static_cast<Note>(m_avrohaInputLastNotes[i]);
+                    avroha.disconnect(avrohaOldFromNote, avrohaToNote);
+                }
                 avroha.connect(avrohaFromNote, avrohaToNote);
-                m_avrohaInputLastValues[i] = volt;
+                m_avrohaInputLastNotes[i] = avrohaFromNote;
             }
         }
         else {
-            if (m_avrohaInputLastValues[i] != -1.f) {  // -1 indicates that note has been disconnected from the graph
-                auto avrohaFromNote = static_cast<Note>(m_avrohaInputLastValues[i] * 12);
+            if (m_avrohaInputLastNotes[i] != Note::NONE) {  // -1 indicates that note has been disconnected from the graph
+                auto avrohaFromNote = static_cast<Note>(m_avrohaInputLastNotes[i]);
                 auto avrohaToNote = static_cast<Note>(i%12);
                 avroha.disconnect(avrohaFromNote, avrohaToNote);
-                m_avrohaInputLastValues[i] = -1.f;
+                m_avrohaInputLastNotes[i] = Note::NONE;
             }
         }
     }
