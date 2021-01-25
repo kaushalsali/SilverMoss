@@ -23,6 +23,7 @@ public:
     int getCurrentOctave() const;
     int getMinOctave() const;
     int getMaxOctave() const;
+    void setCurrentNote(Note note);
     void setTransposition(int semitone);
     void setCurrentOctave(int octave);
     void setOctaveRange(int min, int max);
@@ -39,7 +40,7 @@ private:
     Note m_lastNoteAroha;
     Note m_lastNoteAvroha;
     int m_transposition = 0;
-    int m_octave = 4;
+    int m_currentOctave = 4;
     int m_minOctave = 3;
     int m_maxOctave = 6;
     UniformRandomIntegerGenerator randomGen;

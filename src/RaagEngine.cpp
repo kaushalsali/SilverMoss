@@ -13,12 +13,14 @@ RaagEngine::RaagEngine() :
 }
 
 void RaagEngine::initLastNotes() {
+    m_lastNoteAroha = Note::NONE;
     for (auto it = m_aroha.crbegin(); it != m_aroha.crend(); it++) {
         if (!it->second.empty()) {
             m_lastNoteAroha = it->first;
             break;
         }
     }
+    m_lastNoteAvroha = Note::NONE;
     for (auto it = m_avroha.cbegin(); it != m_avroha.cend(); it++) {
         if (!it->second.empty()) {
             m_lastNoteAvroha = it->first;
@@ -40,7 +42,7 @@ Note RaagEngine::getCurrentNote() const {
 }
 
 int RaagEngine::getCurrentNoteAsMidi() const {
-    return (m_octave+1) * 12 + static_cast<int>(m_currentNote) + m_transposition;
+    return (m_currentOctave+1) * 12 + static_cast<int>(m_currentNote) + m_transposition;
 }
 
 int RaagEngine::getTransposition() const {
@@ -52,22 +54,26 @@ void RaagEngine::setTransposition(int semitone) {
 }
 
 int RaagEngine::getCurrentOctave() const {
-    return m_octave;
+    return m_currentOctave;
 }
 
 void RaagEngine::setOctaveRange(int min, int max) {
     //TODO: This method should allow for setting octaves with offset (i.e. starting from arbitrary note instead of C)
     m_minOctave = min;
     m_maxOctave = std::max(min, max);   //TODO: Is this a good way to handle this?
-    m_octave = std::max(std::min(m_octave, m_maxOctave), m_minOctave);
+    m_currentOctave = std::max(std::min(m_currentOctave, m_maxOctave), m_minOctave);
 }
 
-void RaagEngine::reset() {  //TODO: Complete. Clear RaagEngine objects ?
+void RaagEngine::reset() {
     m_minOctave = 3;
     m_maxOctave = 6;
-    m_octave = 4;
+    m_currentOctave = 4;
     m_transposition = 0;
     m_currentNote = Note::Sa;
+    for (int i=0; i<static_cast<int>(Note::TOTAL); i++) {
+        m_aroha.disconnectAll(static_cast<Note>(i));
+        m_avroha.disconnectAll(static_cast<Note>(i));
+    }
     initLastNotes();
 }
 
@@ -102,15 +108,15 @@ bool RaagEngine::stepDown() {
 }
 
 void RaagEngine::incOctave() {
-    m_octave++;
-    if (m_octave > m_maxOctave)
-        m_octave = m_minOctave;
+    m_currentOctave++;
+    if (m_currentOctave > m_maxOctave)
+        m_currentOctave = m_minOctave;
 }
 
 void RaagEngine::decOctave() {
-    m_octave--;
-    if (m_octave < m_minOctave)
-        m_octave = m_maxOctave;
+    m_currentOctave--;
+    if (m_currentOctave < m_minOctave)
+        m_currentOctave = m_maxOctave;
 }
 
 int RaagEngine::getMinOctave() const {
@@ -122,5 +128,9 @@ int RaagEngine::getMaxOctave() const {
 }
 
 void RaagEngine::setCurrentOctave(int octave) {
-    m_octave = std::max(std::min(octave, m_maxOctave), m_minOctave);
+    m_currentOctave = std::max(std::min(octave, m_maxOctave), m_minOctave);
+}
+
+void RaagEngine::setCurrentNote(Note note) {
+    m_currentNote = note;
 }
