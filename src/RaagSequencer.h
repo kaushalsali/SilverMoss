@@ -8,11 +8,11 @@
 
 
 struct RaagSequencer : Module {
-private:
+public:
     constexpr static int numArohaInputPorts = 24;
     constexpr static int numArohaOutputPorts = 12;
+    constexpr static int numStepLightColors = 2;    // GreenRed
 
-public:
     enum ParamIds {
         PARAM_OCTAVE_MIN,
         PARAM_OCTAVE_MAX,
@@ -34,7 +34,9 @@ public:
         NUM_OUTPUTS
     };
     enum LightIds {
-        NUM_LIGHTS
+        ENUMS(LIGHT_AROHA_SA, numArohaOutputPorts * numStepLightColors),
+        ENUMS(LIGHT_AVROHA_SA, numArohaOutputPorts * numStepLightColors),
+        NUM_LIGHTS,
     };
 
     static float freqToVolt(float frequencyInHz, bool isLFO=false) {
@@ -54,6 +56,7 @@ public:
 
 private:
     void updateConnections();
+    void setStepLightBrightness(Note note, float brightness, int colorIndex = 1); // default color: Red
 
     RaagEngine m_raagEngine;
     dsp::SchmittTrigger m_trigger;

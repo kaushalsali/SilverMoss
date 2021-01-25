@@ -30,7 +30,9 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
 
     // Reset if triggered
     if (inputs[IN_RESET].isConnected() && m_triggerReset.process(inputs[IN_RESET].getVoltage())) {
+        setStepLightBrightness(m_raagEngine.getCurrentNote(), 0.f);
         m_raagEngine.setCurrentNote(Note::Sa);
+        setStepLightBrightness(m_raagEngine.getCurrentNote(), 1.f);
     }
 
     // Step if triggered
@@ -61,7 +63,10 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         DEBUG("Note Played: %s", note_map.at(m_raagEngine.getCurrentNote()).c_str());
         DEBUG("Octave\nMin: %d %d\nMax: %d %d\nCurrent: %d", octaveMin, m_raagEngine.getMinOctave(), octaveMax, m_raagEngine.getMaxOctave(), m_raagEngine.getCurrentOctave());
 
-        // Note backtracking
+        // Turn off light for current note before stepping
+        setStepLightBrightness(m_raagEngine.getCurrentNote(), 0.f);
+
+        // Step with Note backtracking
         int numTries = 3;       //TODO: Improve logic
         bool success = false;
         while(!success && numTries) {
@@ -73,6 +78,9 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
                 directionUp = !directionUp;
             numTries--;
         }
+
+        // Turn on light for new note
+        setStepLightBrightness(m_raagEngine.getCurrentNote(), 1.f);
 
 //        DEBUG("Transposition: %d", m_raagEngine.getTransposition());
 //        auto midi = m_raagEngine.getCurrentNoteAsMidi();
@@ -164,6 +172,12 @@ void RaagSequencer::updateConnections() {
     }
 }
 
+void RaagSequencer::setStepLightBrightness(Note note, float brightness, int colorIndex /* = 0 */) {
+    auto noteNum = static_cast<int>(note);
+    lights[LIGHT_AROHA_SA + noteNum * numStepLightColors + colorIndex].setBrightness(brightness);
+    lights[LIGHT_AVROHA_SA + noteNum * numStepLightColors + colorIndex].setBrightness(brightness);
+}
+
 
 RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
     setModule(module);
@@ -179,7 +193,9 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
         addInput(createInputCentered<PJ301MPort>(mm2px(Vec(15, 10 + i * 10)), module, RaagSequencer::IN_AROHA_SA + i + 12));
         addInput(createInputCentered<PJ301MPort>(mm2px(Vec(30, 10 + i * 10)), module, RaagSequencer::IN_AROHA_SA + i));
         addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(45, 10 + i * 10)), module, RaagSequencer::OUT_AROHA_SA + i));
+        addChild(createLightCentered<MediumLight<GreenRedLight>>(mm2px(Vec(53, 10 + i * 10)), module, RaagSequencer::LIGHT_AROHA_SA + i * RaagSequencer::numStepLightColors));
         // Avroha
+        addChild(createLightCentered<MediumLight<GreenRedLight>>(mm2px(Vec(152.4f - 53, 10 + i * 10)), module, RaagSequencer::LIGHT_AVROHA_SA + i * RaagSequencer::numStepLightColors));
         addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(152.4f - 45, 9.5 + i * 10)), module, RaagSequencer::OUT_AVROHA_SA + i));
         addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f - 30, 10 + i * 10)), module, RaagSequencer::IN_AVROHA_SA + i));
         addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f - 15, 10 + i * 10)), module, RaagSequencer::IN_AVROHA_SA + i + 12));
@@ -193,5 +209,4 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
     addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(152.4f/2 - 8, 10 + 7 * 10)), module, RaagSequencer::PARAM_OCTAVE_MIN));
     addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(152.4f/2 + 8, 10 + 7 * 10)), module, RaagSequencer::PARAM_OCTAVE_MAX));
     addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 10 * 10)), module, RaagSequencer::OUT_VOCT));
-    //addChild(createLightCentered<MediumLight<RedLight>>(mm2px(Vec(15.24, 25.81)), module, RaagSequencer::BLINK_LIGHT));
 }
