@@ -11,6 +11,10 @@ RaagSequencer::RaagSequencer() {
         m_arohaInputLastNotes[i] = Note::NONE;
         m_avrohaInputLastNotes[i] = Note::NONE;
     }
+    for (int i=0; i<numArohaOutputPorts; i++) { // Used for lights
+        m_arohaNumInputConnections[i] = 0;
+        m_avrohaNumInputConnections[i] = 0;
+    }
     m_isFirstStep = true;
 }
 
@@ -30,9 +34,11 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
 
     // Reset if triggered
     if (inputs[IN_RESET].isConnected() && m_triggerReset.process(inputs[IN_RESET].getVoltage())) {
-        setStepLightBrightness(m_raagEngine.getCurrentNote(), 0.f);
+        setArohaLightBrightness(m_raagEngine.getCurrentNote(), 0.f, 1);
+        setAvrohaLightBrightness(m_raagEngine.getCurrentNote(), 0.f, 1);
         m_raagEngine.setCurrentNote(Note::Sa);
-        setStepLightBrightness(m_raagEngine.getCurrentNote(), 1.f);
+        setArohaLightBrightness(m_raagEngine.getCurrentNote(), 1.f, 1);
+        setAvrohaLightBrightness(m_raagEngine.getCurrentNote(), 1.f, 1);
     }
 
     // Step if triggered
@@ -63,8 +69,17 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         DEBUG("Note Played: %s", note_map.at(m_raagEngine.getCurrentNote()).c_str());
         DEBUG("Octave\nMin: %d %d\nMax: %d %d\nCurrent: %d", octaveMin, m_raagEngine.getMinOctave(), octaveMax, m_raagEngine.getMaxOctave(), m_raagEngine.getCurrentOctave());
 
-        // Turn off light for current note before stepping
-        setStepLightBrightness(m_raagEngine.getCurrentNote(), 0.f);
+        // Update lights before stepping
+        auto currentNote = m_raagEngine.getCurrentNote();
+        // Turn off red light
+        setArohaLightBrightness(currentNote, 0.f, 1);
+        setAvrohaLightBrightness(currentNote, 0.f, 1);
+        // Turn on green light if at least one connection exists
+        if (m_arohaNumInputConnections[static_cast<int>(currentNote)] > 0)
+            setArohaLightBrightness(currentNote, 1.f, 0);
+        if (m_avrohaNumInputConnections[static_cast<int>(currentNote)] > 0)
+            setAvrohaLightBrightness(currentNote, 1.f, 0);
+
 
         // Step with Note backtracking
         int numTries = 3;       //TODO: Improve logic
@@ -79,8 +94,15 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
             numTries--;
         }
 
-        // Turn on light for new note
-        setStepLightBrightness(m_raagEngine.getCurrentNote(), 1.f);
+        // Update lights after stepping to new note
+        currentNote = m_raagEngine.getCurrentNote();
+        // Turn off green light
+        setArohaLightBrightness(currentNote, 0.f, 0);
+        setAvrohaLightBrightness(currentNote, 0.f, 0);
+        // Turn on red light
+        setArohaLightBrightness(currentNote, 1.f, 1);
+        setAvrohaLightBrightness(currentNote, 1.f, 1);
+
 
 //        DEBUG("Transposition: %d", m_raagEngine.getTransposition());
 //        auto midi = m_raagEngine.getCurrentNoteAsMidi();
@@ -111,6 +133,7 @@ void RaagSequencer::updateConnections() {
         if (inputs[IN_AROHA_SA + i].isConnected()) {
 //            DEBUG("\n--------here--1----------------\n");
             auto volt = inputs[IN_AROHA_SA + i].getVoltage();
+            //TODO: Decide whether to wrap or limit voltage
             //volt = volt - static_cast<int>(volt);   // wrap to range 0V to 0.916V
             volt = std::min(std::max(0.f, volt), static_cast<float>(Note::Ni)/12); // limit range from 0V to 0.916V
             auto arohaFromNote = static_cast<Note>(static_cast<int>(volt * 12));
@@ -122,6 +145,7 @@ void RaagSequencer::updateConnections() {
                 if (m_arohaInputLastNotes[i] != Note::NONE) {  // Disconnect previous note if present
                     auto arohaOldFromNote = static_cast<Note>(m_arohaInputLastNotes[i]);
                     aroha.disconnect(arohaOldFromNote, arohaToNote);
+                    m_arohaNumInputConnections[i%12]--;
 //                    DEBUG("\nDisconnect: %s to %s\n", note_map.at(arohaOldFromNote).c_str(), note_map.at(arohaToNote).c_str());
                 }
 
@@ -129,7 +153,8 @@ void RaagSequencer::updateConnections() {
                 aroha.connect(arohaFromNote, arohaToNote);
                 m_raagEngine.initLastNotes();
                 m_arohaInputLastNotes[i] = arohaFromNote;
-
+                m_arohaNumInputConnections[i%12]++;
+                setArohaLightBrightness(arohaToNote, 1.f, 0);
             }
         }
         else {
@@ -139,10 +164,12 @@ void RaagSequencer::updateConnections() {
                 aroha.disconnect(arohaFromNote, arohaToNote);
                 m_raagEngine.initLastNotes();
                 m_arohaInputLastNotes[i] = Note::NONE;
+                m_arohaNumInputConnections[i%12]--;
+                if (m_arohaNumInputConnections[i%12] == 0)
+                    setArohaLightBrightness(arohaToNote, 0.f, 0);
 //                DEBUG("\nDisconnect: %s to %s\n", note_map.at(arohaFromNote).c_str(), note_map.at(arohaToNote).c_str());
             }
         }
-
         // For Avroha
         if (inputs[IN_AVROHA_SA + i].isConnected()) {
             auto volt = inputs[IN_AVROHA_SA + i].getVoltage();
@@ -156,10 +183,13 @@ void RaagSequencer::updateConnections() {
                 if (m_avrohaInputLastNotes[i] != Note::NONE) {  // Disconnect previous note if present
                     auto avrohaOldFromNote = static_cast<Note>(m_avrohaInputLastNotes[i]);
                     avroha.disconnect(avrohaOldFromNote, avrohaToNote);
+                    m_avrohaNumInputConnections[i%12]--;
                 }
                 avroha.connect(avrohaFromNote, avrohaToNote);
                 m_raagEngine.initLastNotes();
                 m_avrohaInputLastNotes[i] = avrohaFromNote;
+                m_avrohaNumInputConnections[i%12]++;
+                setAvrohaLightBrightness(avrohaToNote, 1.f, 0);
             }
         }
         else {
@@ -169,17 +199,30 @@ void RaagSequencer::updateConnections() {
                 avroha.disconnect(avrohaFromNote, avrohaToNote);
                 m_raagEngine.initLastNotes();
                 m_avrohaInputLastNotes[i] = Note::NONE;
+                m_avrohaNumInputConnections[i%12]--;
+                if (m_avrohaNumInputConnections[i%12] == 0)
+                    setAvrohaLightBrightness(avrohaToNote, 0.f, 0);
+
             }
         }
     }
 }
 
-void RaagSequencer::setStepLightBrightness(Note note, float brightness, int colorIndex /* = 0 */) {
-    auto noteNum = static_cast<int>(note);
-    lights[LIGHT_AROHA_SA + noteNum * numStepLightColors + colorIndex].setBrightness(brightness);
-    lights[LIGHT_AVROHA_SA + noteNum * numStepLightColors + colorIndex].setBrightness(brightness);
+void RaagSequencer::setArohaLightBrightness(Note note, float brightness, int colorIndex /* = 0 */) {
+    lights[LIGHT_AROHA_SA + static_cast<int>(note) * numLightColors + colorIndex].setBrightness(brightness);
 }
 
+void RaagSequencer::setAvrohaLightBrightness(Note note, float brightness, int colorIndex /* = 0 */) {
+    lights[LIGHT_AVROHA_SA + static_cast<int>(note) * numLightColors + colorIndex].setBrightness(brightness);
+}
+
+float RaagSequencer::getArohaLightBrightness(Note note, int colorIndex) {
+    return lights[LIGHT_AROHA_SA + static_cast<int>(note) * numLightColors + colorIndex].getBrightness();
+}
+
+float RaagSequencer::getAvrohaLightBrightness(Note note, int colorIndex) {
+    return lights[LIGHT_AVROHA_SA + static_cast<int>(note) * numLightColors + colorIndex].getBrightness();
+}
 
 RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
     setModule(module);
@@ -195,9 +238,9 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
         addInput(createInputCentered<PJ301MPort>(mm2px(Vec(15, 10 + i * 10)), module, RaagSequencer::IN_AROHA_SA + i + 12));
         addInput(createInputCentered<PJ301MPort>(mm2px(Vec(30, 10 + i * 10)), module, RaagSequencer::IN_AROHA_SA + i));
         addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(45, 10 + i * 10)), module, RaagSequencer::OUT_AROHA_SA + i));
-        addChild(createLightCentered<MediumLight<GreenRedLight>>(mm2px(Vec(53, 10 + i * 10)), module, RaagSequencer::LIGHT_AROHA_SA + i * RaagSequencer::numStepLightColors));
+        addChild(createLightCentered<MediumLight<GreenRedLight>>(mm2px(Vec(53, 10 + i * 10)), module, RaagSequencer::LIGHT_AROHA_SA + i * RaagSequencer::numLightColors));
         // Avroha
-        addChild(createLightCentered<MediumLight<GreenRedLight>>(mm2px(Vec(152.4f - 53, 10 + i * 10)), module, RaagSequencer::LIGHT_AVROHA_SA + i * RaagSequencer::numStepLightColors));
+        addChild(createLightCentered<MediumLight<GreenRedLight>>(mm2px(Vec(152.4f - 53, 10 + i * 10)), module, RaagSequencer::LIGHT_AVROHA_SA + i * RaagSequencer::numLightColors));
         addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(152.4f - 45, 9.5 + i * 10)), module, RaagSequencer::OUT_AVROHA_SA + i));
         addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f - 30, 10 + i * 10)), module, RaagSequencer::IN_AVROHA_SA + i));
         addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f - 15, 10 + i * 10)), module, RaagSequencer::IN_AVROHA_SA + i + 12));

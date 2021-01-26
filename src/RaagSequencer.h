@@ -11,7 +11,7 @@ struct RaagSequencer : Module {
 public:
     constexpr static int numArohaInputPorts = 24;
     constexpr static int numArohaOutputPorts = 12;
-    constexpr static int numStepLightColors = 2;    // GreenRed
+    constexpr static int numLightColors = 2;    // GreenRed
 
     enum ParamIds {
         PARAM_OCTAVE_MIN,
@@ -34,8 +34,8 @@ public:
         NUM_OUTPUTS
     };
     enum LightIds {
-        ENUMS(LIGHT_AROHA_SA, numArohaOutputPorts * numStepLightColors),
-        ENUMS(LIGHT_AVROHA_SA, numArohaOutputPorts * numStepLightColors),
+        ENUMS(LIGHT_AROHA_SA, numArohaOutputPorts * numLightColors),
+        ENUMS(LIGHT_AVROHA_SA, numArohaOutputPorts * numLightColors),
         NUM_LIGHTS,
     };
 
@@ -56,13 +56,18 @@ public:
 
 private:
     void updateConnections();
-    void setStepLightBrightness(Note note, float brightness, int colorIndex = 1); // default color: Red
+    float getArohaLightBrightness(Note note, int colorIndex = 0); // default color: Green)
+    float getAvrohaLightBrightness(Note note, int colorIndex = 0); // default color: Green)
+    void setArohaLightBrightness(Note note, float brightness, int colorIndex = 0); // default color: Green
+    void setAvrohaLightBrightness(Note note, float brightness, int colorIndex = 0);
 
     RaagEngine m_raagEngine;
     dsp::SchmittTrigger m_trigger;
     dsp::SchmittTrigger m_triggerReset;
     std::array<Note, numArohaInputPorts> m_arohaInputLastNotes;
     std::array<Note, numArohaInputPorts> m_avrohaInputLastNotes;
+    std::array<int, numArohaOutputPorts> m_arohaNumInputConnections;
+    std::array<int, numArohaOutputPorts> m_avrohaNumInputConnections;
     bool m_isFirstStep = true;
 
 };
