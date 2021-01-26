@@ -158,6 +158,7 @@ void RaagSequencer::updateConnections() {
                     avroha.disconnect(avrohaOldFromNote, avrohaToNote);
                 }
                 avroha.connect(avrohaFromNote, avrohaToNote);
+                m_raagEngine.initLastNotes();
                 m_avrohaInputLastNotes[i] = avrohaFromNote;
             }
         }
@@ -166,6 +167,7 @@ void RaagSequencer::updateConnections() {
                 auto avrohaFromNote = static_cast<Note>(m_avrohaInputLastNotes[i]);
                 auto avrohaToNote = static_cast<Note>(i%12);
                 avroha.disconnect(avrohaFromNote, avrohaToNote);
+                m_raagEngine.initLastNotes();
                 m_avrohaInputLastNotes[i] = Note::NONE;
             }
         }
