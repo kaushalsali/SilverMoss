@@ -63,11 +63,11 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
             directionUp = inputs[IN_DIRECTION].getVoltage() >= 5.0f;
         }
 
-        DEBUG("\n-----------Aroha\"-----------\n%s", m_raagEngine.getAroha().printGraph().c_str());
-        DEBUG("\n-----------Avroha\"-----------\n%s", m_raagEngine.getAvroha().printGraph().c_str());
-        DEBUG("Direction: %i", static_cast<int>(directionUp));
-        DEBUG("Note Played: %s", note_map.at(m_raagEngine.getCurrentNote()).c_str());
-        DEBUG("Octave\nMin: %d %d\nMax: %d %d\nCurrent: %d", octaveMin, m_raagEngine.getMinOctave(), octaveMax, m_raagEngine.getMaxOctave(), m_raagEngine.getCurrentOctave());
+//        DEBUG("\n-----------Aroha\"-----------\n%s", m_raagEngine.getAroha().printGraph().c_str());
+//        DEBUG("\n-----------Avroha\"-----------\n%s", m_raagEngine.getAvroha().printGraph().c_str());
+//        DEBUG("Direction: %i", static_cast<int>(directionUp));
+//        DEBUG("Note Played: %s", note_map.at(m_raagEngine.getCurrentNote()).c_str());
+//        DEBUG("Octave\nMin: %d %d\nMax: %d %d\nCurrent: %d", octaveMin, m_raagEngine.getMinOctave(), octaveMax, m_raagEngine.getMaxOctave(), m_raagEngine.getCurrentOctave());
 
         // Update lights before stepping
         auto currentNote = m_raagEngine.getCurrentNote();
@@ -247,9 +247,9 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
     }
 
     // Control Section
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 1 * 10)), module, RaagSequencer::IN_TRIGGER));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 2.5 * 10)), module, RaagSequencer::IN_DIRECTION));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 4 * 10)), module, RaagSequencer::IN_RESET));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 0.5 * 10)), module, RaagSequencer::IN_TRIGGER));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 2 * 10)), module, RaagSequencer::IN_DIRECTION));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 3.5 * 10)), module, RaagSequencer::IN_RESET));
     addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(152.4f/2, 10 + 5.5 * 10)), module, RaagSequencer::PARAM_TRANSPOSE));
     addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(152.4f/2 - 8, 10 + 7 * 10)), module, RaagSequencer::PARAM_OCTAVE_MIN));
     addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(152.4f/2 + 8, 10 + 7 * 10)), module, RaagSequencer::PARAM_OCTAVE_MAX));
