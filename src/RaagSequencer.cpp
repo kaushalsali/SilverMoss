@@ -36,17 +36,39 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         m_isFirstStep = false;
 
 
-    // Reset if triggered
-    if (inputs[IN_RESET].isConnected() && m_triggerReset.process(inputs[IN_RESET].getVoltage())) {
-        setArohaLightBrightness(m_raagEngine.getCurrentNote(), 0.f, 1);
-        setAvrohaLightBrightness(m_raagEngine.getCurrentNote(), 0.f, 1);
-        m_raagEngine.setCurrentNote(Note::Sa);
-        setArohaLightBrightness(m_raagEngine.getCurrentNote(), 1.f, 1);
-        setAvrohaLightBrightness(m_raagEngine.getCurrentNote(), 1.f, 1);
+    // Reset (if button pressed or if received from CV port)
+    if (m_trigResetButton.process(params[PARAM_RESET].getValue()) || (inputs[IN_RESET].isConnected() && m_trigResetInput.process(inputs[IN_RESET].getVoltage()))) {
+        // Turn on reset light
+        m_resetLightBrightness = 1.f;
+        lights[LIGHT_RESET].setBrightness(m_resetLightBrightness);
+
+        auto currentNote = m_raagEngine.getCurrentNote();
+        // Turn off red
+        setArohaLightBrightness(currentNote, 0.f, 1);
+        setAvrohaLightBrightness(currentNote, 0.f, 1);
+        // Turn on green if connections exist
+        if (m_arohaNumInputConnections[static_cast<int>(currentNote)] > 0)
+            setArohaLightBrightness(currentNote, 1.f, 0);
+        if (m_avrohaNumInputConnections[static_cast<int>(currentNote)] > 0)
+            setAvrohaLightBrightness(currentNote, 1.f, 0);
+        // Reset current Note
+        currentNote = Note::Sa;
+        m_raagEngine.setCurrentNote(currentNote);
+        // Turn on red for updated note
+        setArohaLightBrightness(currentNote, 1.f, 1);
+        setAvrohaLightBrightness(currentNote, 1.f, 1);
     }
 
+    // Dim reset light
+    if (m_resetLightBrightness > 0.f) {   // TODO: Optimize. Don't need to do this every step
+        auto decayAmount = 0.0001;
+        m_resetLightBrightness -= decayAmount;
+        lights[LIGHT_RESET].setBrightness(m_resetLightBrightness);
+    }
+
+
     // Step if triggered
-    if (inputs[IN_TRIGGER].isConnected() && m_trigger.process(inputs[IN_TRIGGER].getVoltage())) {
+    if (inputs[IN_TRIGGER].isConnected() && m_trigTriggerInput.process(inputs[IN_TRIGGER].getVoltage())) {
 
         // Set Transposition. This is done on trigger for performance
         auto transposeSemitone = static_cast<int>(params[PARAM_TRANSPOSE].getValue());
@@ -258,12 +280,14 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
     addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 + 8, 10 + 2.5 * 10)), module, RaagSequencer::PARAM_OCTAVE_MAX));
     // Trigger
     addParam(createParamCentered<LEDBezel>(mm2px(Vec(panelWidth/2 - 10, 10 + 4.5 * 10)), module, RaagSequencer::PARAM_TRIGGER));
+    addChild(createLightCentered<LargeLight<GreenLight>>(mm2px(Vec(panelWidth/2 - 10, 10 + 4.5 * 10)), module, RaagSequencer::LIGHT_TRIGGER));
     addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 + 10, 10 + 4.5 * 10)), module, RaagSequencer::IN_TRIGGER));
     // Direction
     addParam(createParamCentered<CKSS>(mm2px(Vec(panelWidth/2 - 10, 10 + 6 * 10)), module, RaagSequencer::PARAM_DIRECTION));
     addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 + 10, 10 + 6 * 10)), module, RaagSequencer::IN_DIRECTION));
     // Reset
     addParam(createParamCentered<LEDBezel>(mm2px(Vec(panelWidth/2 - 10, 10 + 7.5 * 10)), module, RaagSequencer::PARAM_RESET));
+    addChild(createLightCentered<LargeLight<GreenLight>>(mm2px(Vec(panelWidth/2 - 10, 10 + 7.5 * 10)), module, RaagSequencer::LIGHT_RESET));
     addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 + 10, 10 + 7.5 * 10)), module, RaagSequencer::IN_RESET));
     // Num Steps
     addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 - 10, 10 + 9 * 10)), module, RaagSequencer::PARAM_NUM_STEPS));

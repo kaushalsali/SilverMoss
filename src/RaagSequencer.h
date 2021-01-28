@@ -41,6 +41,8 @@ public:
     enum LightIds {
         ENUMS(LIGHT_AROHA_SA, numArohaOutputPorts * numLightColors),
         ENUMS(LIGHT_AVROHA_SA, numArohaOutputPorts * numLightColors),
+        LIGHT_TRIGGER,
+        LIGHT_RESET,
         NUM_LIGHTS,
     };
 
@@ -61,19 +63,22 @@ public:
 
 private:
     void updateConnections();
-    float getArohaLightBrightness(Note note, int colorIndex = 0); // default color: Green)
-    float getAvrohaLightBrightness(Note note, int colorIndex = 0); // default color: Green)
-    void setArohaLightBrightness(Note note, float brightness, int colorIndex = 0); // default color: Green
+    float getArohaLightBrightness(Note note, int colorIndex = 0); // default color: Green
+    float getAvrohaLightBrightness(Note note, int colorIndex = 0);
+    void setArohaLightBrightness(Note note, float brightness, int colorIndex = 0);
     void setAvrohaLightBrightness(Note note, float brightness, int colorIndex = 0);
 
     RaagEngine m_raagEngine;
-    dsp::SchmittTrigger m_trigger;
-    dsp::SchmittTrigger m_triggerReset;
+    dsp::SchmittTrigger m_trigTriggerInput;
+    dsp::SchmittTrigger m_trigTriggerButton;
+    dsp::SchmittTrigger m_trigResetInput;
+    dsp::SchmittTrigger m_trigResetButton;
     std::array<Note, numArohaInputPorts> m_arohaInputLastNotes;
     std::array<Note, numArohaInputPorts> m_avrohaInputLastNotes;
     std::array<int, numArohaOutputPorts> m_arohaNumInputConnections;
     std::array<int, numArohaOutputPorts> m_avrohaNumInputConnections;
     bool m_isFirstStep = true;
+    float m_resetLightBrightness = 0.f;
 
 };
 
