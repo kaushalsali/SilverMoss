@@ -7,12 +7,11 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="152.39999mm"
+   width="203.2mm"
    height="128.5mm"
-   viewBox="0 0 152.40001 128.50002"
+   viewBox="0 0 203.20002 128.50002"
    version="1.1"
    id="svg8"
    inkscape:version="0.92.2 5c3e80d, 2017-08-06"
@@ -26,13 +25,13 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="272.73039"
-     inkscape:cy="272.20412"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="408.64051"
+     inkscape:cy="191.39192"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
-     units="mm"
+     units="in"
      inkscape:snap-bbox="true"
      inkscape:snap-page="true"
      inkscape:bbox-nodes="false"
@@ -62,7 +61,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -72,29 +71,22 @@
      id="layer1"
      transform="translate(0,-168.49998)">
     <rect
-       style="display:inline;opacity:1;vector-effect:none;fill:#e6e6e6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.45306754;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+       style="display:inline;opacity:1;vector-effect:none;fill:#e6e6e6;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.67637265;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
        id="rect420"
-       width="152.62218"
+       width="203.13612"
        height="128.5"
        x="5.9211732e-17"
        y="168.49997" />
     <rect
        style="opacity:0.994;fill:#b3b3b3;fill-opacity:1;stroke:#020200;stroke-width:0;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.95121951"
        id="rect814"
-       width="10.294999"
+       width="9.4260626"
        height="128.61371"
-       x="102.53576"
+       x="153.4487"
        y="168.41483" />
-    <rect
-       y="167.88428"
-       x="39.568962"
-       height="129.40753"
-       width="10.294999"
-       id="rect816"
-       style="opacity:0.994;fill:#b3b3b3;fill-opacity:1;stroke:#020200;stroke-width:0;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.95121951" />
     <g
        aria-label="V/OCT"
-       transform="matrix(0.93453979,0,0,1.0700454,0,5.2916667)"
+       transform="matrix(1.243848,0,0,1.0700454,0,142.87503)"
        style="font-style:normal;font-weight:normal;font-size:2.34997702px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.05874942"
        id="text824">
       <path
@@ -125,7 +117,7 @@
     </g>
     <g
        aria-label="DIRECTION"
-       transform="matrix(0.93453979,0,0,1.0700454,0,-5.8208333)"
+       transform="matrix(1.243848,0,0,1.0700454,0,131.76252)"
        style="font-style:normal;font-weight:normal;font-size:2.34997702px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.05874942"
        id="text828">
       <path
@@ -176,7 +168,7 @@
     </g>
     <g
        aria-label="TRIGGER"
-       transform="matrix(0.93453979,0,0,1.0700454,0.52916663,-10.583333)"
+       transform="matrix(1.243848,0,0,1.0700454,0.70430692,127.00002)"
        style="font-style:normal;font-weight:normal;font-size:2.34997702px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.05874942"
        id="text836">
       <path
@@ -217,7 +209,7 @@
     </g>
     <g
        aria-label="OCTAVE RANGE"
-       transform="matrix(0.93453979,0,0,1.0700454,0.52916667,4.7624999)"
+       transform="matrix(1.243848,0,0,1.0700454,0.70430697,142.34586)"
        style="font-style:normal;font-weight:normal;font-size:2.34997702px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.05874942"
        id="text844">
       <path
@@ -278,7 +270,7 @@
     </g>
     <g
        aria-label="TRANSPOSE"
-       transform="matrix(0.93453979,0,0,1.0700454,0.43320384,21.20442)"
+       transform="matrix(1.243848,0,0,1.0700454,0.57658296,158.78779)"
        style="font-style:normal;font-weight:normal;font-size:2.34997702px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.05874942"
        id="text852">
       <path
@@ -329,7 +321,7 @@
     </g>
     <g
        aria-label="RESET"
-       transform="matrix(0.96963644,0,0,1.0313144,-12.133035,-14.703273)"
+       transform="matrix(1.2905607,0,0,1.0313144,-16.148752,122.88008)"
        style="font-style:normal;font-weight:normal;font-size:2.39515495px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.05987888"
        id="text947">
       <path
@@ -358,22 +350,13 @@
          id="path982"
          inkscape:connector-curvature="0" />
     </g>
-    <image
-       y="227.33897"
-       x="-11.452679"
-       id="image971"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAICAYAAADqSp8ZAAAABHNCSVQICAgIfAhkiAAAAW9JREFU
-KJGlkEHLKWEYhi+cxdQnprDQJAtbWVkoW2mknN3slVjYUFZW/IfzD5SsLCz4Cew0mJWajUmWaKRI
-z1nN11fHdPrOuXb3+1z13t0BVVWlUChwuVwwDINOp4PjOGSzWfL5PB6LxYJgMEir1cK2bUKhEOl0
-msFg8Ic7m82o1WoAmKZJJpMhHA6jquovisWiiIg8Hg/RNE1c15XD4SDe+1em06k0m83PfD6ffV2P
-arUq6/Xaiz+DXqvb7cbz+eT1euGHoihst1s2mw0iQjQa9XX9+GFZFuVymdVqxXA4JBKJcL1esSwL
-XdcBSCQSjEYjKpUK+/2eRqOB4zj0ej0Mw3jr+uLNYZqm6LouIvLXmURETqeTpFIpWS6X/zZpLpcj
-mUwyn899yx2PR+73OwCxWIyPjw8CgcD3Jv0aut0u7Xab8XjMbrejVCp93iaTCbZt0+/3URQF13Wp
-1+tomvbWjcfjbz8MiIj6rYr/h/sbc4Asp4IdJWUAAAAASUVORK5CYII=
-"
-       preserveAspectRatio="none"
-       height="2.1166666"
-       width="7.4083333" />
+    <rect
+       y="168.41483"
+       x="40.207058"
+       height="128.61371"
+       width="9.4260626"
+       id="rect874"
+       style="opacity:0.994;fill:#b3b3b3;fill-opacity:1;stroke:#020200;stroke-width:0;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.95121951" />
   </g>
   <g
      inkscape:groupmode="layer"

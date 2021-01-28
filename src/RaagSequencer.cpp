@@ -6,6 +6,10 @@ RaagSequencer::RaagSequencer() {
     configParam(PARAM_TRANSPOSE, -11, 11, 0, "Transpose");
     configParam(PARAM_OCTAVE_MIN, -2, 8, 4, "Octave Min");
     configParam(PARAM_OCTAVE_MAX, -2, 8, 4, "Octave Max");
+    configParam(PARAM_TRIGGER, 0.f, 1.f, 0.f, "Trigger");
+    configParam(PARAM_DIRECTION, 0.f, 1.f, 0.f, "Direction");
+    configParam(PARAM_RESET, -2, 8, 4, "Reset");
+    configParam(PARAM_NUM_STEPS, -2, 8, 4, "Num Steps");
 
     for (int i=0; i<numArohaInputPorts; i++) {
         m_arohaInputLastNotes[i] = Note::NONE;
@@ -240,18 +244,30 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
         addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(45, 10 + i * 10)), module, RaagSequencer::OUT_AROHA_SA + i));
         addChild(createLightCentered<MediumLight<GreenRedLight>>(mm2px(Vec(53, 10 + i * 10)), module, RaagSequencer::LIGHT_AROHA_SA + i * RaagSequencer::numLightColors));
         // Avroha
-        addChild(createLightCentered<MediumLight<GreenRedLight>>(mm2px(Vec(152.4f - 53, 10 + i * 10)), module, RaagSequencer::LIGHT_AVROHA_SA + i * RaagSequencer::numLightColors));
-        addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(152.4f - 45, 9.5 + i * 10)), module, RaagSequencer::OUT_AVROHA_SA + i));
-        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f - 30, 10 + i * 10)), module, RaagSequencer::IN_AVROHA_SA + i));
-        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f - 15, 10 + i * 10)), module, RaagSequencer::IN_AVROHA_SA + i + 12));
+        addChild(createLightCentered<MediumLight<GreenRedLight>>(mm2px(Vec(panelWidth - 53, 10 + i * 10)), module, RaagSequencer::LIGHT_AVROHA_SA + i * RaagSequencer::numLightColors));
+        addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(panelWidth - 45, 9.5 + i * 10)), module, RaagSequencer::OUT_AVROHA_SA + i));
+        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth - 30, 10 + i * 10)), module, RaagSequencer::IN_AVROHA_SA + i));
+        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth - 15, 10 + i * 10)), module, RaagSequencer::IN_AVROHA_SA + i + 12));
     }
 
     // Control Section
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 0.5 * 10)), module, RaagSequencer::IN_TRIGGER));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 2 * 10)), module, RaagSequencer::IN_DIRECTION));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 3.5 * 10)), module, RaagSequencer::IN_RESET));
-    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(152.4f/2, 10 + 5.5 * 10)), module, RaagSequencer::PARAM_TRANSPOSE));
-    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(152.4f/2 - 8, 10 + 7 * 10)), module, RaagSequencer::PARAM_OCTAVE_MIN));
-    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(152.4f/2 + 8, 10 + 7 * 10)), module, RaagSequencer::PARAM_OCTAVE_MAX));
-    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(152.4f/2, 10 + 10 * 10)), module, RaagSequencer::OUT_VOCT));
+    // Octave Range
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2, 10 + 1 * 10)), module, RaagSequencer::PARAM_TRANSPOSE));
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 - 8, 10 + 2.5 * 10)), module, RaagSequencer::PARAM_OCTAVE_MIN));
+    // Transpose
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 + 8, 10 + 2.5 * 10)), module, RaagSequencer::PARAM_OCTAVE_MAX));
+    // Trigger
+    addParam(createParamCentered<LEDBezel>(mm2px(Vec(panelWidth/2 - 10, 10 + 4.5 * 10)), module, RaagSequencer::PARAM_TRIGGER));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 + 10, 10 + 4.5 * 10)), module, RaagSequencer::IN_TRIGGER));
+    // Direction
+    addParam(createParamCentered<CKSS>(mm2px(Vec(panelWidth/2 - 10, 10 + 6 * 10)), module, RaagSequencer::PARAM_DIRECTION));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 + 10, 10 + 6 * 10)), module, RaagSequencer::IN_DIRECTION));
+    // Reset
+    addParam(createParamCentered<LEDBezel>(mm2px(Vec(panelWidth/2 - 10, 10 + 7.5 * 10)), module, RaagSequencer::PARAM_RESET));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 + 10, 10 + 7.5 * 10)), module, RaagSequencer::IN_RESET));
+    // Num Steps
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 - 10, 10 + 9 * 10)), module, RaagSequencer::PARAM_NUM_STEPS));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 + 10, 10 + 9 * 10)), module, RaagSequencer::IN_NUM_STEPS));
+    // V/OCT
+    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2, 10 + 10.5 * 10)), module, RaagSequencer::OUT_VOCT));
 }

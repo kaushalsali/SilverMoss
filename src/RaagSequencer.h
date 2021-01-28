@@ -17,20 +17,25 @@ public:
         PARAM_OCTAVE_MIN,
         PARAM_OCTAVE_MAX,
         PARAM_TRANSPOSE,
+        PARAM_TRIGGER,
+        PARAM_DIRECTION,
+        PARAM_RESET,
+        PARAM_NUM_STEPS,
         NUM_PARAMS
     };
     enum InputIds {
-        IN_AROHA_SA,
-        IN_AVROHA_SA = IN_AROHA_SA + numArohaInputPorts,
-        IN_TRIGGER = IN_AVROHA_SA + numArohaInputPorts,
+        ENUMS(IN_AROHA_SA, numArohaInputPorts),
+        ENUMS(IN_AVROHA_SA, numArohaInputPorts),
+        IN_TRIGGER,
         IN_DIRECTION,
         IN_RESET,
+        IN_NUM_STEPS,
         NUM_INPUTS
     };
     enum OutputIds {
-        OUT_AROHA_SA,
-        OUT_AVROHA_SA = OUT_AROHA_SA + numArohaOutputPorts,
-        OUT_VOCT = OUT_AVROHA_SA + numArohaOutputPorts,
+        ENUMS(OUT_AROHA_SA, numArohaOutputPorts),
+        ENUMS(OUT_AVROHA_SA, numArohaOutputPorts),
+        OUT_VOCT,
         NUM_OUTPUTS
     };
     enum LightIds {
@@ -75,6 +80,8 @@ private:
 
 struct RaagSequencerWidget : ModuleWidget {
     explicit RaagSequencerWidget(RaagSequencer *module);
+    constexpr static float panelWidth = 203.2;    //TODO: Does Rack api provide these from svg?
+    constexpr static float panelHeight = 128.5;
 };
 
 Model* modelRaagSequencer = createModel<RaagSequencer, RaagSequencerWidget>("RaagSequencer");
