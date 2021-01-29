@@ -79,6 +79,7 @@ private:
     std::array<int, numArohaOutputPorts> m_avrohaNumInputConnections;
     bool m_isFirstStep = true;
     float m_resetLightBrightness = 0.f;
+    float m_triggerLightBrightness = 0.f;
 
 };
 

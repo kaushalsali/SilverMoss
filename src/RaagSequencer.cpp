@@ -36,7 +36,8 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         m_isFirstStep = false;
 
 
-    // Reset (if button pressed or if received from CV port)
+    // Reset
+    // if button pressed or if received from CV port
     if (m_trigResetButton.process(params[PARAM_RESET].getValue()) || (inputs[IN_RESET].isConnected() && m_trigResetInput.process(inputs[IN_RESET].getVoltage()))) {
         // Turn on reset light
         m_resetLightBrightness = 1.f;
@@ -59,16 +60,13 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         setAvrohaLightBrightness(currentNote, 1.f, 1);
     }
 
-    // Dim reset light
-    if (m_resetLightBrightness > 0.f) {   // TODO: Optimize. Don't need to do this every step
-        auto decayAmount = 0.0001;
-        m_resetLightBrightness -= decayAmount;
-        lights[LIGHT_RESET].setBrightness(m_resetLightBrightness);
-    }
 
-
-    // Step if triggered
-    if (inputs[IN_TRIGGER].isConnected() && m_trigTriggerInput.process(inputs[IN_TRIGGER].getVoltage())) {
+    // Trigger
+    // if Trigger button pressed or received from CV port
+    if (m_trigTriggerButton.process(params[PARAM_TRIGGER].getValue()) || (inputs[IN_TRIGGER].isConnected() && m_trigTriggerInput.process(inputs[IN_TRIGGER].getVoltage()))) {
+        // Turn on reset light
+        m_triggerLightBrightness = 1.f;
+        lights[LIGHT_TRIGGER].setBrightness(m_triggerLightBrightness);
 
         // Set Transposition. This is done on trigger for performance
         auto transposeSemitone = static_cast<int>(params[PARAM_TRANSPOSE].getValue());
@@ -142,6 +140,22 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
 //        DEBUG("volt: %f", volt);
 //        DEBUG("----------");
     }
+
+    // Handle lights // TODO: Optimize. Do this every frame.
+    // Dim reset light
+    if (m_resetLightBrightness > 0.f) {
+        auto decayAmount = 0.0001;
+        m_resetLightBrightness -= decayAmount;
+        lights[LIGHT_RESET].setBrightness(m_resetLightBrightness); //TODO: Use smoothBrightness() ??
+    }
+    // Dim Trigger light
+    if (m_triggerLightBrightness > 0.f) {
+        auto decayAmount = 0.0001;
+        m_triggerLightBrightness -= decayAmount;
+        lights[LIGHT_TRIGGER].setBrightness(m_triggerLightBrightness); //TODO: Use smoothBrightness() ??
+    }
+
+
 
     // Set output V/OCT based on current note
     auto midi = m_raagEngine.getCurrentNoteAsMidi();
@@ -260,17 +274,17 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
     addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
     addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-    for (int i=0; i<12; i++) {
+    for (int i=0; i<Note::TOTAL; i++) {
         // Aroha
-        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(15, 10 + i * 10)), module, RaagSequencer::IN_AROHA_SA + i + 12));
-        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(30, 10 + i * 10)), module, RaagSequencer::IN_AROHA_SA + i));
-        addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(45, 10 + i * 10)), module, RaagSequencer::OUT_AROHA_SA + i));
-        addChild(createLightCentered<MediumLight<GreenRedLight>>(mm2px(Vec(53, 10 + i * 10)), module, RaagSequencer::LIGHT_AROHA_SA + i * RaagSequencer::numLightColors));
+        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(15, panelHeight - (10.f + i * 10))), module, RaagSequencer::IN_AROHA_SA + i + 12));
+        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(30, panelHeight - (10.f + i * 10))), module, RaagSequencer::IN_AROHA_SA + i));
+        addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(45, panelHeight - (10.f + i * 10))), module, RaagSequencer::OUT_AROHA_SA + i));
+        addChild(createLightCentered<MediumLight<GreenRedLight>>(mm2px(Vec(53, panelHeight - (10.f + i * 10))), module, RaagSequencer::LIGHT_AROHA_SA + i * RaagSequencer::numLightColors));
         // Avroha
-        addChild(createLightCentered<MediumLight<GreenRedLight>>(mm2px(Vec(panelWidth - 53, 10 + i * 10)), module, RaagSequencer::LIGHT_AVROHA_SA + i * RaagSequencer::numLightColors));
-        addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(panelWidth - 45, 9.5 + i * 10)), module, RaagSequencer::OUT_AVROHA_SA + i));
-        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth - 30, 10 + i * 10)), module, RaagSequencer::IN_AVROHA_SA + i));
-        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth - 15, 10 + i * 10)), module, RaagSequencer::IN_AVROHA_SA + i + 12));
+        addChild(createLightCentered<MediumLight<GreenRedLight>>(mm2px(Vec(panelWidth - 53, panelHeight - (10.f + i * 10))), module, RaagSequencer::LIGHT_AVROHA_SA + i * RaagSequencer::numLightColors));
+        addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(panelWidth - 45, panelHeight - (10.f + i * 10))), module, RaagSequencer::OUT_AVROHA_SA + i));
+        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth - 30, panelHeight - (10.f + i * 10))), module, RaagSequencer::IN_AVROHA_SA + i));
+        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth - 15, panelHeight - (10.f + i * 10))), module, RaagSequencer::IN_AVROHA_SA + i + 12));
     }
 
     // Control Section
