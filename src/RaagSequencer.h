@@ -64,7 +64,7 @@ public:
 private:
     void updateConnections();
     float getArohaLightBrightness(Note note, int colorIndex = 0); // default color: Green
-    float getAvrohaLightBrightness(Note note, int colorIndex = 0);
+    float getAvrohaLightBrightness(Note note, int colorIndex = 0);  //TODO: Use Enum instead of color id
     void setArohaLightBrightness(Note note, float brightness, int colorIndex = 0);
     void setAvrohaLightBrightness(Note note, float brightness, int colorIndex = 0);
 

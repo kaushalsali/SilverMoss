@@ -35,7 +35,6 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
     else
         m_isFirstStep = false;
 
-
     // Reset
     // if button pressed or if received from CV port
     if (m_trigResetButton.process(params[PARAM_RESET].getValue()) || (inputs[IN_RESET].isConnected() && m_trigResetInput.process(inputs[IN_RESET].getVoltage()))) {
@@ -60,7 +59,6 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         setAvrohaLightBrightness(currentNote, 1.f, 1);
     }
 
-
     // Trigger
     // if Trigger button pressed or received from CV port
     if (m_trigTriggerButton.process(params[PARAM_TRIGGER].getValue()) || (inputs[IN_TRIGGER].isConnected() && m_trigTriggerInput.process(inputs[IN_TRIGGER].getVoltage()))) {
@@ -82,7 +80,13 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         }
 
         // Set Num Steps. This is done on trigger for performance
-        auto numSteps = static_cast<int>(params[PARAM_NUM_STEPS].getValue());
+        int numSteps;
+        if (inputs[IN_NUM_STEPS].isConnected()) {
+            auto volt = inputs[IN_NUM_STEPS].getVoltage();
+            numSteps = std::min(std::max(1, static_cast<int>(volt / 10.f * 12.f) + 1), 12);; // map input voltage to range of 1 to 12
+        }
+        else
+            numSteps = static_cast<int>(params[PARAM_NUM_STEPS].getValue());
 
         // Set Direction
         bool directionUp;
@@ -161,7 +165,6 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
     }
 
 
-
     // Set output V/OCT based on current note
     auto midi = m_raagEngine.getCurrentNoteAsMidi();
     auto freq = midiToFreq(midi - 60);
@@ -187,14 +190,12 @@ void RaagSequencer::updateConnections() {
 
             if (arohaFromNote != m_arohaInputLastNotes[i]) {
                 auto arohaToNote = static_cast<Note>(i%12);
-
                 if (m_arohaInputLastNotes[i] != Note::NONE) {  // Disconnect previous note if present
                     auto arohaOldFromNote = static_cast<Note>(m_arohaInputLastNotes[i]);
                     aroha.disconnect(arohaOldFromNote, arohaToNote);
                     m_arohaNumInputConnections[i%12]--;
 //                    DEBUG("\nDisconnect: %s to %s\n", note_map.at(arohaOldFromNote).c_str(), note_map.at(arohaToNote).c_str());
                 }
-
 //                DEBUG("\nVoltage: %d   Connect: %s to %s\n", volt, note_map.at(arohaNewFromNote).c_str(), note_map.at(arohaToNote).c_str());
                 aroha.connect(arohaFromNote, arohaToNote);
                 m_raagEngine.initLastNotes();
@@ -248,7 +249,6 @@ void RaagSequencer::updateConnections() {
                 m_avrohaNumInputConnections[i%12]--;
                 if (m_avrohaNumInputConnections[i%12] == 0)
                     setAvrohaLightBrightness(avrohaToNote, 0.f, 0);
-
             }
         }
     }
