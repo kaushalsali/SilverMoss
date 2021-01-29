@@ -3,13 +3,13 @@
 
 RaagSequencer::RaagSequencer() {
     config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
-    configParam(PARAM_TRANSPOSE, -11, 11, 0, "Transpose");
-    configParam(PARAM_OCTAVE_MIN, -2, 8, 4, "Octave Min");
-    configParam(PARAM_OCTAVE_MAX, -2, 8, 4, "Octave Max");
+    configParam(PARAM_TRANSPOSE, -11.f, 11.f, 0.f, "Transpose");
+    configParam(PARAM_OCTAVE_MIN, -2.f, 8.f, 4.f, "Octave Min");
+    configParam(PARAM_OCTAVE_MAX, -2.f, 8.f, 4.f, "Octave Max");
     configParam(PARAM_TRIGGER, 0.f, 1.f, 0.f, "Trigger");
     configParam(PARAM_DIRECTION, 0.f, 1.f, 0.f, "Direction");
-    configParam(PARAM_RESET, -2, 8, 4, "Reset");
-    configParam(PARAM_NUM_STEPS, -2, 8, 4, "Num Steps");
+    configParam(PARAM_RESET, 0.f, 1.f, 0.f, "Reset");
+    configParam(PARAM_NUM_STEPS, 1.f, 12.f, 1.f, "Num Steps");
 
     for (int i=0; i<numArohaInputPorts; i++) {
         m_arohaInputLastNotes[i] = Note::NONE;
@@ -81,18 +81,15 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
             m_raagEngine.setOctaveRange(octaveMin, octaveMax);
         }
 
-        // Get Direction
+        // Set Num Steps. This is done on trigger for performance
+        auto numSteps = static_cast<int>(params[PARAM_NUM_STEPS].getValue());
+
+        // Set Direction
         bool directionUp;
         if (inputs[IN_DIRECTION].isConnected())
             directionUp = inputs[IN_DIRECTION].getVoltage() >= 5.0f;
         else
             directionUp = params[PARAM_DIRECTION].getValue() == 1.f;
-
-//        DEBUG("\n-----------Aroha\"-----------\n%s", m_raagEngine.getAroha().printGraph().c_str());
-//        DEBUG("\n-----------Avroha\"-----------\n%s", m_raagEngine.getAvroha().printGraph().c_str());
-//        DEBUG("Direction: %i", static_cast<int>(directionUp));
-//        DEBUG("Note Played: %s", note_map.at(m_raagEngine.getCurrentNote()).c_str());
-//        DEBUG("Octave\nMin: %d %d\nMax: %d %d\nCurrent: %d", octaveMin, m_raagEngine.getMinOctave(), octaveMax, m_raagEngine.getMaxOctave(), m_raagEngine.getCurrentOctave());
 
         // Update lights before stepping
         auto currentNote = m_raagEngine.getCurrentNote();
@@ -106,17 +103,20 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
             setAvrohaLightBrightness(currentNote, 1.f, 0);
 
 
-        // Step with Note backtracking
-        int numTries = 3;       //TODO: Improve logic
-        bool success = false;
-        while(!success && numTries) {
-            if (directionUp)
-                success = m_raagEngine.stepUp();
-            else
-                success = m_raagEngine.stepDown();
-            if (!success)
-                directionUp = !directionUp;
-            numTries--;
+        // Step with Note backtracking  //TODO: Make backtracking optional
+        for (int i=0; i<numSteps; i++) {
+            auto stepUp = directionUp;
+            auto numTries = 2;       //TODO: Improve logic
+            auto success = false;
+            while (!success && numTries) {
+                if (stepUp)
+                    success = m_raagEngine.stepUp();
+                else
+                    success = m_raagEngine.stepDown();
+                if (!success)
+                    stepUp = !stepUp;
+                numTries--;
+            }
         }
 
         // Update lights after stepping to new note
@@ -129,6 +129,11 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         setAvrohaLightBrightness(currentNote, 1.f, 1);
 
 
+//        DEBUG("\n-----------Aroha\"-----------\n%s", m_raagEngine.getAroha().printGraph().c_str());
+//        DEBUG("\n-----------Avroha\"-----------\n%s", m_raagEngine.getAvroha().printGraph().c_str());
+//        DEBUG("Direction: %i", static_cast<int>(directionUp));
+//        DEBUG("Note Played: %s", note_map.at(m_raagEngine.getCurrentNote()).c_str());
+//        DEBUG("Octave\nMin: %d %d\nMax: %d %d\nCurrent: %d", octaveMin, m_raagEngine.getMinOctave(), octaveMax, m_raagEngine.getMaxOctave(), m_raagEngine.getCurrentOctave());
 //        DEBUG("Transposition: %d", m_raagEngine.getTransposition());
 //        auto midi = m_raagEngine.getCurrentNoteAsMidi();
 //        DEBUG("Midi: %d", midi);
