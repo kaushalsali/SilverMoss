@@ -4,11 +4,7 @@
 
 #include "RaagEngine.h"
 
-
-RaagEngine::RaagEngine() :
-    m_lastNoteAroha(Note::NONE),
-    m_lastNoteAvroha(Note::NONE)
-{
+RaagEngine::RaagEngine() {
     initLastNotes();
 }
 

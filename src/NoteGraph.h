@@ -35,7 +35,8 @@ const std::unordered_map<Note, std::string, EnumClassHash> note_map {
         {Note::Sa, "Sa"}, {Note::re, "re"}, {Note::Re, "Re"},
         {Note::ga, "ga"}, {Note::Ga, "Ga"}, {Note::Ma, "Ma"},
         {Note::ma, "ma"}, {Note::Pa, "Pa"}, {Note::dha, "dha"},
-        {Note::Dha, "Dha"}, {Note::ni, "ni"}, {Note::Ni, "Ni"}
+        {Note::Dha, "Dha"}, {Note::ni, "ni"}, {Note::Ni, "Ni"},
+        {Note::TOTAL, "TOTAL"}, {Note::NONE, "NONE"}
 };
 
 
