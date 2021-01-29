@@ -84,10 +84,11 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         }
 
         // Get Direction
-        auto directionUp = true;
-        if (inputs[IN_DIRECTION].isConnected()) {
+        bool directionUp;
+        if (inputs[IN_DIRECTION].isConnected())
             directionUp = inputs[IN_DIRECTION].getVoltage() >= 5.0f;
-        }
+        else
+            directionUp = params[PARAM_DIRECTION].getValue() == 1.f;
 
 //        DEBUG("\n-----------Aroha\"-----------\n%s", m_raagEngine.getAroha().printGraph().c_str());
 //        DEBUG("\n-----------Avroha\"-----------\n%s", m_raagEngine.getAvroha().printGraph().c_str());
