@@ -21,6 +21,7 @@ public:
         PARAM_DIRECTION,
         PARAM_RESET,
         PARAM_NUM_STEPS,
+        PARAM_BACKTRACKING,
         NUM_PARAMS
     };
     enum InputIds {

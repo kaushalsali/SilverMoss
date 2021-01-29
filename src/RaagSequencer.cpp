@@ -6,6 +6,7 @@ RaagSequencer::RaagSequencer() {
     configParam(PARAM_TRANSPOSE, -11.f, 11.f, 0.f, "Transpose");
     configParam(PARAM_OCTAVE_MIN, -2.f, 8.f, 4.f, "Octave Min");
     configParam(PARAM_OCTAVE_MAX, -2.f, 8.f, 4.f, "Octave Max");
+    configParam(PARAM_BACKTRACKING, 0.f, 1.f, 0.f, "Note Backtracking");
     configParam(PARAM_TRIGGER, 0.f, 1.f, 0.f, "Trigger");
     configParam(PARAM_DIRECTION, 0.f, 1.f, 0.f, "Direction");
     configParam(PARAM_RESET, 0.f, 1.f, 0.f, "Reset");
@@ -95,6 +96,9 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         else
             directionUp = params[PARAM_DIRECTION].getValue() == 1.f;
 
+        // Set Backtracking
+        auto backtracking = params[PARAM_BACKTRACKING].getValue() == 1.f;
+
         // Update lights before stepping
         auto currentNote = m_raagEngine.getCurrentNote();
         // Turn off red light
@@ -107,10 +111,12 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
             setAvrohaLightBrightness(currentNote, 1.f, 0);
 
 
-        // Step with Note backtracking  //TODO: Make backtracking optional
+        // Step
         for (int i=0; i<numSteps; i++) {
             auto stepUp = directionUp;
-            auto numTries = 2;       //TODO: Improve logic
+            // If backtracking, and there's no connection in current direction, we try to take 1 step in the reverse direction
+            //TODO: Improve logic. Perhaps an we could do more than one reverse steps ?? Think. Is this necessary?
+            auto numTries = backtracking ? 2 : 1;
             auto success = false;
             while (!success && numTries) {
                 if (stepUp)
@@ -294,10 +300,12 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
 
     // Control Section
     // Octave Range
-    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2, 10 + 1 * 10)), module, RaagSequencer::PARAM_TRANSPOSE));
-    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 - 8, 10 + 2.5 * 10)), module, RaagSequencer::PARAM_OCTAVE_MIN));
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2, 10 + 0.5 * 10)), module, RaagSequencer::PARAM_TRANSPOSE));
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 - 8, 10 + 2 * 10)), module, RaagSequencer::PARAM_OCTAVE_MIN));
     // Transpose
-    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 + 8, 10 + 2.5 * 10)), module, RaagSequencer::PARAM_OCTAVE_MAX));
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 + 8, 10 + 2 * 10)), module, RaagSequencer::PARAM_OCTAVE_MAX));
+    // Backtracking
+    addParam(createParamCentered<CKSS>(mm2px(Vec(panelWidth/2, 10 + 3.5 * 10)), module, RaagSequencer::PARAM_BACKTRACKING));
     // Trigger
     addParam(createParamCentered<LEDBezel>(mm2px(Vec(panelWidth/2 - 10, 10 + 4.5 * 10)), module, RaagSequencer::PARAM_TRIGGER));
     addChild(createLightCentered<LargeLight<GreenLight>>(mm2px(Vec(panelWidth/2 - 10, 10 + 4.5 * 10)), module, RaagSequencer::LIGHT_TRIGGER));
