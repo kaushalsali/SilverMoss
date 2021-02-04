@@ -80,11 +80,10 @@ bool RaagEngine::stepUp() {
 
     if(m_currentNote == m_lastNoteAroha)
         incOctave();
+
     randomGen.setRange(0, static_cast<int>(nextNotes.size())-1);
-    auto offset = randomGen.generate();
-    auto it = nextNotes.cbegin();
-    std::advance(it, offset);    //TODO: This is expensive, linear complexity.
-    m_currentNote = *it;
+    auto randomIdx = randomGen.generate();
+    m_currentNote = nextNotes[randomIdx];
     return true;
 }
 
@@ -95,11 +94,10 @@ bool RaagEngine::stepDown() {
 
     if(m_currentNote == m_lastNoteAvroha)
         decOctave();
+
     randomGen.setRange(0, static_cast<int>(nextNotes.size())-1);
-    auto offset = randomGen.generate();
-    auto it = nextNotes.cbegin();
-    std::advance(it, offset);    //TODO: This is expensive, linear complexity.
-    m_currentNote = *it;
+    auto randomIdx = randomGen.generate();
+    m_currentNote = nextNotes[randomIdx];
     return true;
 }
 
