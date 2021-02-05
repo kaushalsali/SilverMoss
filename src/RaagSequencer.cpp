@@ -139,11 +139,11 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         setAvrohaLightBrightness(currentNote, 1.f, 1);
 
 
-//        DEBUG("\n-----------Aroha\"-----------\n%s", m_raagEngine.getAroha().printGraph().c_str());
-//        DEBUG("\n-----------Avroha\"-----------\n%s", m_raagEngine.getAvroha().printGraph().c_str());
+        DEBUG("\n-----------Aroha\"-----------\n%s", m_raagEngine.getAroha().printGraph().c_str());
+        DEBUG("\n-----------Avroha\"-----------\n%s", m_raagEngine.getAvroha().printGraph().c_str());
 //        DEBUG("Direction: %i", static_cast<int>(directionUp));
 //        DEBUG("Note Played: %s", note_map.at(m_raagEngine.getCurrentNote()).c_str());
-//        DEBUG("Octave\nMin: %d %d\nMax: %d %d\nCurrent: %d", octaveMin, m_raagEngine.getMinOctave(), octaveMax, m_raagEngine.getMaxOctave(), m_raagEngine.getCurrentOctave());
+        DEBUG("Octave\nMin: %d %d\nMax: %d %d\nCurrent: %d", octaveMin, m_raagEngine.getMinOctave(), octaveMax, m_raagEngine.getMaxOctave(), m_raagEngine.getCurrentOctave());
 //        DEBUG("Transposition: %d", m_raagEngine.getTransposition());
 //        auto midi = m_raagEngine.getCurrentNoteAsMidi();
 //        DEBUG("Midi: %d", midi);
@@ -180,8 +180,6 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
 
 void RaagSequencer::updateConnections() {
 //    DEBUG("-----updateConnections------");
-    auto& aroha = m_raagEngine.getAroha();
-    auto& avroha = m_raagEngine.getAvroha();
 
     for (int i=0; i<numArohaInputPorts; i++) {
         // For Aroha
@@ -198,12 +196,12 @@ void RaagSequencer::updateConnections() {
                 auto arohaToNote = static_cast<Note>(i%12);
                 if (m_arohaInputLastNotes[i] != Note::NONE) {  // Disconnect previous note if present
                     auto arohaOldFromNote = static_cast<Note>(m_arohaInputLastNotes[i]);
-                    aroha.disconnect(arohaOldFromNote, arohaToNote);
+                    m_raagEngine.disconnectNotesInAroha(arohaOldFromNote, arohaToNote);
                     m_arohaNumInputConnections[i%12]--;
 //                    DEBUG("\nDisconnect: %s to %s\n", note_map.at(arohaOldFromNote).c_str(), note_map.at(arohaToNote).c_str());
                 }
 //                DEBUG("\nVoltage: %d   Connect: %s to %s\n", volt, note_map.at(arohaNewFromNote).c_str(), note_map.at(arohaToNote).c_str());
-                aroha.connect(arohaFromNote, arohaToNote);
+                m_raagEngine.connectNotesInAroha(arohaFromNote, arohaToNote);
                 m_raagEngine.initLastNotes();
                 m_arohaInputLastNotes[i] = arohaFromNote;
                 m_arohaNumInputConnections[i%12]++;
@@ -214,7 +212,7 @@ void RaagSequencer::updateConnections() {
             if (m_arohaInputLastNotes[i] != Note::NONE) {  // if note has not yet been disconnected from the graph
                 auto arohaFromNote = static_cast<Note>(m_arohaInputLastNotes[i]);
                 auto arohaToNote = static_cast<Note>(i%12);
-                aroha.disconnect(arohaFromNote, arohaToNote);
+                m_raagEngine.disconnectNotesInAroha(arohaFromNote, arohaToNote);
                 m_raagEngine.initLastNotes();
                 m_arohaInputLastNotes[i] = Note::NONE;
                 m_arohaNumInputConnections[i%12]--;
@@ -235,10 +233,10 @@ void RaagSequencer::updateConnections() {
                 auto avrohaToNote = static_cast<Note>(i%12);
                 if (m_avrohaInputLastNotes[i] != Note::NONE) {  // Disconnect previous note if present
                     auto avrohaOldFromNote = static_cast<Note>(m_avrohaInputLastNotes[i]);
-                    avroha.disconnect(avrohaOldFromNote, avrohaToNote);
+                    m_raagEngine.disconnectNotesInAvroha(avrohaOldFromNote, avrohaToNote);
                     m_avrohaNumInputConnections[i%12]--;
                 }
-                avroha.connect(avrohaFromNote, avrohaToNote);
+                m_raagEngine.connectNotesInAvroha(avrohaFromNote, avrohaToNote);
                 m_raagEngine.initLastNotes();
                 m_avrohaInputLastNotes[i] = avrohaFromNote;
                 m_avrohaNumInputConnections[i%12]++;
@@ -249,7 +247,7 @@ void RaagSequencer::updateConnections() {
             if (m_avrohaInputLastNotes[i] != Note::NONE) {  // -1 indicates that note has been disconnected from the graph
                 auto avrohaFromNote = static_cast<Note>(m_avrohaInputLastNotes[i]);
                 auto avrohaToNote = static_cast<Note>(i%12);
-                avroha.disconnect(avrohaFromNote, avrohaToNote);
+                m_raagEngine.disconnectNotesInAvroha(avrohaFromNote, avrohaToNote);
                 m_raagEngine.initLastNotes();
                 m_avrohaInputLastNotes[i] = Note::NONE;
                 m_avrohaNumInputConnections[i%12]--;

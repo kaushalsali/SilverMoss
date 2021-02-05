@@ -3,34 +3,43 @@
 //
 
 #include "RaagEngine.h"
+#include "plugin.hpp"
 
-RaagEngine::RaagEngine() {
+RaagEngine::RaagEngine() :
+    m_notesInUseAroha(),
+    m_notesInUseAvroha()
+{
     initLastNotes();
+    for (int i=0; i<12; i++) {
+        DEBUG("--%d", m_notesInUseAroha[i]);
+    }
+
 }
 
 void RaagEngine::initLastNotes() {
     m_lastNoteAroha = Note::NONE;
-    for (auto it = m_aroha.crbegin(); it != m_aroha.crend(); it++) {
-        if (!it->second.empty()) {
-            m_lastNoteAroha = it->first;
+    for (auto i = static_cast<int>(Note::Ni); i >= static_cast<int>(Note::Sa); i--) {
+        if (m_notesInUseAroha[i] > 0) {  // will be > 0 if there is a 'from' or 'to' connection.
+            m_lastNoteAroha = static_cast<Note> (i);
             break;
         }
     }
     m_lastNoteAvroha = Note::NONE;
-    for (auto it = m_avroha.cbegin(); it != m_avroha.cend(); it++) {
-        if (!it->second.empty()) {
-            m_lastNoteAvroha = it->first;
+    for (auto i = static_cast<int>(Note::Sa); i <= static_cast<int>(Note::Ni); i++) {
+        if (m_notesInUseAvroha[i] > 0) {  // will be > 0 if there is a 'from' or 'to' connection.
+            m_lastNoteAvroha = static_cast<Note> (i);
             break;
         }
     }
-}
+    DEBUG("Aroha last: %s", note_map.at(m_lastNoteAroha).c_str());
+    DEBUG("Avroha last: %s", note_map.at(m_lastNoteAvroha).c_str());
 
-NoteGraph& RaagEngine::getAroha() {
-    return m_aroha;
-}
+    for (int i=0; i<12; i++) {
+        DEBUG("%d", m_notesInUseAroha[i]);
+    }
+    DEBUG("--------" );
 
-NoteGraph& RaagEngine::getAvroha() {
-    return m_avroha;
+
 }
 
 Note RaagEngine::getCurrentNote() const {
@@ -66,10 +75,8 @@ void RaagEngine::reset() {
     m_currentOctave = 4;
     m_transposition = 0;
     m_currentNote = Note::Sa;
-    for (int i=0; i<static_cast<int>(Note::TOTAL); i++) {
-        m_aroha.disconnectAll(static_cast<Note>(i));
-        m_avroha.disconnectAll(static_cast<Note>(i));
-    }
+    m_aroha.reset();
+    m_avroha.reset();
     initLastNotes();
 }
 
@@ -127,4 +134,34 @@ void RaagEngine::setCurrentOctave(int octave) {
 
 void RaagEngine::setCurrentNote(Note note) {
     m_currentNote = note;
+}
+
+void RaagEngine::connectNotesInAroha(Note from, Note to) {
+    m_aroha.connect(from, to);
+    m_notesInUseAroha[static_cast<int>(from)]++;
+    m_notesInUseAroha[static_cast<int>(to)]++;
+}
+
+void RaagEngine::connectNotesInAvroha(Note from, Note to) {
+    m_avroha.connect(from, to);
+    m_notesInUseAvroha[static_cast<int>(from)]++;
+    m_notesInUseAvroha[static_cast<int>(to)]++;
+}
+void RaagEngine::disconnectNotesInAroha(Note from, Note to) {
+    m_aroha.disconnect(from, to);
+    m_notesInUseAroha[static_cast<int>(from)]--;
+    m_notesInUseAroha[static_cast<int>(to)]--;
+}
+void RaagEngine::disconnectNotesInAvroha(Note from, Note to) {
+    m_avroha.disconnect(from, to);
+    m_notesInUseAvroha[static_cast<int>(from)]--;
+    m_notesInUseAvroha[static_cast<int>(to)]--;
+}
+
+void RaagEngine::disconnectAllNotesInAroha(Note from) {
+
+}
+
+void RaagEngine::disconnectAllNotesInAvroha(Note from) {
+
 }
