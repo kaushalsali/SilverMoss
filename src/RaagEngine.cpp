@@ -4,11 +4,7 @@
 
 #include "RaagEngine.h"
 
-
-RaagEngine::RaagEngine() :
-    m_lastNoteAroha(Note::NONE),
-    m_lastNoteAvroha(Note::NONE)
-{
+RaagEngine::RaagEngine() {
     initLastNotes();
 }
 
@@ -70,10 +66,8 @@ void RaagEngine::reset() {
     m_currentOctave = 4;
     m_transposition = 0;
     m_currentNote = Note::Sa;
-    for (int i=0; i<static_cast<int>(Note::TOTAL); i++) {
-        m_aroha.disconnectAll(static_cast<Note>(i));
-        m_avroha.disconnectAll(static_cast<Note>(i));
-    }
+    m_aroha.reset();
+    m_avroha.reset();
     initLastNotes();
 }
 
@@ -84,11 +78,10 @@ bool RaagEngine::stepUp() {
 
     if(m_currentNote == m_lastNoteAroha)
         incOctave();
+
     randomGen.setRange(0, static_cast<int>(nextNotes.size())-1);
-    auto offset = randomGen.generate();
-    auto it = nextNotes.cbegin();
-    std::advance(it, offset);    //TODO: This is expensive, linear complexity.
-    m_currentNote = *it;
+    auto randomIdx = randomGen.generate();
+    m_currentNote = nextNotes[randomIdx];
     return true;
 }
 
@@ -99,11 +92,10 @@ bool RaagEngine::stepDown() {
 
     if(m_currentNote == m_lastNoteAvroha)
         decOctave();
+
     randomGen.setRange(0, static_cast<int>(nextNotes.size())-1);
-    auto offset = randomGen.generate();
-    auto it = nextNotes.cbegin();
-    std::advance(it, offset);    //TODO: This is expensive, linear complexity.
-    m_currentNote = *it;
+    auto randomIdx = randomGen.generate();
+    m_currentNote = nextNotes[randomIdx];
     return true;
 }
 

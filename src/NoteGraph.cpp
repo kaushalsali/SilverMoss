@@ -4,21 +4,26 @@
 
 NoteGraph::NoteGraph() {
     for (int i=0; i<static_cast<int>(Note::TOTAL); i++) {
-        m_graph.insert(std::pair<Note, NotesSet>(static_cast<Note>(i), NotesSet()));
-        //m_graph.insert(std::pair<Note, NotesSet)
+        m_graph.insert(std::pair<Note, std::vector<Note>>(static_cast<Note>(i), std::vector<Note>()));
+
     }
 }
 
-const NotesSet& NoteGraph::getConnectedNotes(Note from) {
+const std::vector<Note>& NoteGraph::getConnectedNotes(Note from) {
     return m_graph[from];
 }
 
 void NoteGraph::connect(Note from, Note to) {
-    m_graph[from].insert(to);
+    m_graph[from].push_back(to);
 }
 
 void NoteGraph::disconnect(Note from, Note to) {
-    m_graph[from].erase(to);
+    for (auto it=m_graph[from].cbegin(); it != m_graph[from].cend(); it++) {
+        if (*it == to) {
+            m_graph[from].erase(it);
+            return;
+        }
+    }
 }
 
 void NoteGraph::disconnectAll(Note from) {

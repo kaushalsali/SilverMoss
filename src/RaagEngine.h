@@ -37,8 +37,8 @@ private:
     NoteGraph m_aroha;
     NoteGraph m_avroha;
     Note m_currentNote = Note::Sa;
-    Note m_lastNoteAroha;
-    Note m_lastNoteAvroha;
+    Note m_lastNoteAroha = Note::NONE;
+    Note m_lastNoteAvroha = Note::NONE;
     int m_transposition = 0;
     int m_currentOctave = 4;
     int m_minOctave = 3;

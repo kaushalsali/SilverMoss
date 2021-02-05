@@ -35,12 +35,12 @@ const std::unordered_map<Note, std::string, EnumClassHash> note_map {
         {Note::Sa, "Sa"}, {Note::re, "re"}, {Note::Re, "Re"},
         {Note::ga, "ga"}, {Note::Ga, "Ga"}, {Note::Ma, "Ma"},
         {Note::ma, "ma"}, {Note::Pa, "Pa"}, {Note::dha, "dha"},
-        {Note::Dha, "Dha"}, {Note::ni, "ni"}, {Note::Ni, "Ni"}
+        {Note::Dha, "Dha"}, {Note::ni, "ni"}, {Note::Ni, "Ni"},
+        {Note::TOTAL, "TOTAL"}, {Note::NONE, "NONE"}
 };
 
 
-using NotesSet = std::unordered_set<Note, EnumClassHash>;
-using Graph = std::map<Note, NotesSet>;
+using Graph = std::map<Note, std::vector<Note>>;
 
 /*
  * Builds a graph containing paths from a note to note. Each note can go to multiple unique notes.
@@ -50,7 +50,7 @@ public:
     NoteGraph();
     //TODO: Destructor needed ????
 
-    const NotesSet & getConnectedNotes(Note from);
+    const std::vector<Note> & getConnectedNotes(Note from);
     void connect(Note from, Note to);
     void disconnect(Note from, Note to);
     void disconnectAll(Note from);
