@@ -66,10 +66,8 @@ void RaagEngine::reset() {
     m_currentOctave = 4;
     m_transposition = 0;
     m_currentNote = Note::Sa;
-    for (int i=0; i<static_cast<int>(Note::TOTAL); i++) {
-        m_aroha.disconnectAll(static_cast<Note>(i));
-        m_avroha.disconnectAll(static_cast<Note>(i));
-    }
+    m_aroha.reset();
+    m_avroha.reset();
     initLastNotes();
 }
 
