@@ -76,12 +76,13 @@ bool RaagEngine::stepUp() {
     if (nextNotes.empty())
         return false;
 
-    if(m_currentNote == m_lastNoteAroha)
+    randomGen.setRange(0, static_cast<int>(nextNotes.size())-1);
+    auto nextNote = nextNotes[randomGen.generate()];
+
+    if(m_currentNote == m_lastNoteAroha && nextNote < m_currentNote)
         incOctave();
 
-    randomGen.setRange(0, static_cast<int>(nextNotes.size())-1);
-    auto randomIdx = randomGen.generate();
-    m_currentNote = nextNotes[randomIdx];
+    m_currentNote = nextNote;
     return true;
 }
 
@@ -90,12 +91,13 @@ bool RaagEngine::stepDown() {
     if (nextNotes.empty())
         return false;
 
-    if(m_currentNote == m_lastNoteAvroha)
+    randomGen.setRange(0, static_cast<int>(nextNotes.size())-1);
+    auto nextNote = nextNotes[randomGen.generate()];
+
+    if(m_currentNote == m_lastNoteAvroha && nextNote > m_currentNote)
         decOctave();
 
-    randomGen.setRange(0, static_cast<int>(nextNotes.size())-1);
-    auto randomIdx = randomGen.generate();
-    m_currentNote = nextNotes[randomIdx];
+    m_currentNote = nextNote;
     return true;
 }
 
