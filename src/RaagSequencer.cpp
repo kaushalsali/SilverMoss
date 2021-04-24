@@ -24,6 +24,22 @@ RaagSequencer::RaagSequencer() {
 }
 
 void RaagSequencer::process(const Module::ProcessArgs &args) {
+
+    // Check expanders
+    if (rightExpander.module && rightExpander.module->model == modelRaagSequencerExpander) {
+
+        DEBUG("M<------Hello");
+        // Get message from right expander
+//        auto *message = (float*) rightExpander.module->leftExpander.consumerMessage;
+
+        // Write message
+//        for (int i = 0; i < 8; i++) {
+//            message[i] = inputs[i].getVoltage() / 10.f;
+//        }
+        // Flip messages at the end of the timestep
+//        rightExpander.module->leftExpander.messageFlipRequested = true;
+    }
+
     // Set voltage for output ports
     for (int i=0; i<12; i++) {
         outputs[OUT_AROHA_SA + i].setVoltage(static_cast<float>(i) / 12.0f);
