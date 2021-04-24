@@ -3,10 +3,12 @@
 //
 
 #include "plugin.hpp"
+#include "RaagEngine.h"
+#include <array>
 
 struct RaagSequencerExpander : Module {
 public:
-    constexpr static int numInputPorts = 24;
+    constexpr static int numInputPorts = 12;
 
     enum ParamIds {
         NUM_PARAMS
@@ -27,6 +29,9 @@ public:
     RaagSequencerExpander();
 
     void process(const ProcessArgs &args) override;
+
+private:
+    std::array<Note, numInputPorts> m_inputLastNotes;
 };
 
 

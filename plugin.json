@@ -18,6 +18,12 @@
       "name": "RaagSequencer",
       "description": "",
       "tags": []
+    },
+    {
+      "slug": "RaagSequencerExpander",
+      "name": "RaagSequencerExpander",
+      "description": "Input port expander",
+      "tags": []
     }
   ]
 }

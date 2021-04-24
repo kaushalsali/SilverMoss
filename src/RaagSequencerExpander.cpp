@@ -3,28 +3,17 @@
 //
 
 #include "RaagSequencerExpander.h"
-#include "RaagEngine.h"
+
 
 RaagSequencerExpander::RaagSequencerExpander()
 {
-    leftExpander.producerMessage = m_leftMessages[0];
-    leftExpander.consumerMessage = m_leftMessages[1];
-}
-
-
-RaagSequencerExpanderWidget::RaagSequencerExpanderWidget(RaagSequencerExpander *module) {
-    setModule(module);
-    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/RaagSequencerExpander.svg")));
-
-    addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-    addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-
-    for (int i = 0; i < Note::TOTAL; i++) {
-        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(15, panelHeight - (10.f + i * 10))), module,RaagSequencerExpander::IN_SA + i));
+    config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+    for (int i=0; i<numInputPorts; i++) {
+        m_inputLastNotes[i] = Note::NONE;
     }
 
+    leftExpander.producerMessage = m_leftMessages[0];
+    leftExpander.consumerMessage = m_leftMessages[1];
 }
 
 void RaagSequencerExpander::process(const ProcessArgs &args) {
@@ -39,4 +28,21 @@ void RaagSequencerExpander::process(const ProcessArgs &args) {
         // No mother module is connected.
         // TODO Clear the lights.
     }
+}
+
+
+
+RaagSequencerExpanderWidget::RaagSequencerExpanderWidget(RaagSequencerExpander *module) {
+    setModule(module);
+    setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/RaagSequencerExpander.svg")));
+
+    addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+    addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+    addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+
+    for (int i = 0; i < Note::TOTAL; i++) {
+        addInput(createInputCentered<PJ301MPort>(mm2px(Vec(8, panelHeight - (10.f + i * 10))), module,RaagSequencerExpander::IN_SA + i));
+    }
+
 }
