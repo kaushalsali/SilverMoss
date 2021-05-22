@@ -5,10 +5,10 @@ RaagSequencer::RaagSequencer() {
     config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
     configParam(PARAM_TRANSPOSE, -11.f, 11.f, 0.f, "Transpose");
     configParam(PARAM_OCTAVE_MIN, -2.f, 8.f, 4.f, "Octave Min");
-    configParam(PARAM_OCTAVE_MAX, -2.f, 8.f, 4.f, "Octave Max");
+    configParam(PARAM_OCTAVE_RANGE, 1.f, 10.f, 1.f, "Octave Range");
     configParam(PARAM_BACKTRACKING, 0.f, 1.f, 0.f, "Note Backtracking");
     configParam(PARAM_TRIGGER, 0.f, 1.f, 0.f, "Trigger");
-    configParam(PARAM_DIRECTION, 0.f, 1.f, 0.f, "Direction");
+    configParam(PARAM_DIRECTION, 0.f, 1.f, 1.f, "Direction");
     configParam(PARAM_RESET, 0.f, 1.f, 0.f, "Reset");
     configParam(PARAM_NUM_STEPS, 1.f, 12.f, 1.f, "Num Steps");
 
@@ -75,10 +75,9 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
 
         // Set octave ranges. This is done on trigger for performance
         auto octaveMin = static_cast<int>(params[PARAM_OCTAVE_MIN].getValue());
-        auto octaveMax = static_cast<int>(params[PARAM_OCTAVE_MAX].getValue());
-        if (octaveMin != m_raagEngine.getMinOctave() or octaveMax != m_raagEngine.getMaxOctave()) {
-            m_raagEngine.setOctaveRange(octaveMin, octaveMax);
-        }
+        auto octaveRange = static_cast<int>(params[PARAM_OCTAVE_RANGE].getValue());
+        m_raagEngine.setOctaveRange(octaveMin, octaveMin + octaveRange);
+        DEBUG("Octave----\nMin: %d Range: %d \nMin: %d Max: %d", octaveMin, octaveRange, m_raagEngine.getMinOctave(), m_raagEngine.getMaxOctave());
 
         // Set Num Steps. This is done on trigger for performance
         int numSteps;
@@ -303,7 +302,7 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
     addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2, 10 + 0.5 * 10)), module, RaagSequencer::PARAM_TRANSPOSE));
     addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 - 8, 10 + 2 * 10)), module, RaagSequencer::PARAM_OCTAVE_MIN));
     // Transpose
-    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 + 8, 10 + 2 * 10)), module, RaagSequencer::PARAM_OCTAVE_MAX));
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 + 8, 10 + 2 * 10)), module, RaagSequencer::PARAM_OCTAVE_RANGE));
     // Backtracking
     addParam(createParamCentered<CKSS>(mm2px(Vec(panelWidth/2, 10 + 3.5 * 10)), module, RaagSequencer::PARAM_BACKTRACKING));
     // Trigger

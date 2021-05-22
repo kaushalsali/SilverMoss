@@ -15,7 +15,7 @@ public:
 
     enum ParamIds {
         PARAM_OCTAVE_MIN,
-        PARAM_OCTAVE_MAX,
+        PARAM_OCTAVE_RANGE,
         PARAM_TRANSPOSE,
         PARAM_TRIGGER,
         PARAM_DIRECTION,
