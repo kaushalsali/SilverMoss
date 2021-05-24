@@ -21,7 +21,6 @@ private:
     std::random_device m_randomSeedGen;
     std::mt19937 m_randomGenerator;
     std::uniform_int_distribution<> m_uniformDist;
-
 };
 
 
