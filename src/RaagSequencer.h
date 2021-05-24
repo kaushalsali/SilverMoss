@@ -4,6 +4,7 @@
 
 #include "plugin.hpp"
 #include "RaagEngine.h"
+#include "RandomBooleanGenerator.h"
 #include <array>
 
 
@@ -81,6 +82,7 @@ private:
     bool m_isFirstStep = true;
     float m_resetLightBrightness = 0.f;
     float m_triggerLightBrightness = 0.f;
+    RandomBooleanGenerator m_directionGenerator;
 
 };
 

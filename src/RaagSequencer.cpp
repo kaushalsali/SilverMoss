@@ -8,7 +8,7 @@ RaagSequencer::RaagSequencer() {
     configParam(PARAM_OCTAVE_MAX, -2.f, 8.f, 4.f, "Octave Max");
     configParam(PARAM_BACKTRACKING, 0.f, 1.f, 0.f, "Note Backtracking");
     configParam(PARAM_TRIGGER, 0.f, 1.f, 0.f, "Trigger");
-    configParam(PARAM_DIRECTION, 0.f, 1.f, 0.f, "Direction");
+    configParam(PARAM_DIRECTION, 0.f, 1.f, 0.5f, "Direction");
     configParam(PARAM_RESET, 0.f, 1.f, 0.f, "Reset");
     configParam(PARAM_NUM_STEPS, 1.f, 12.f, 1.f, "Num Steps");
 
@@ -90,11 +90,14 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
             numSteps = static_cast<int>(params[PARAM_NUM_STEPS].getValue());
 
         // Set Direction
-        bool directionUp;
+        float prob;
         if (inputs[IN_DIRECTION].isConnected())
-            directionUp = inputs[IN_DIRECTION].getVoltage() >= 5.0f;
+            prob = std::max(std::min(1.f, inputs[IN_DIRECTION].getVoltage()/10.f), 0.f);
         else
-            directionUp = params[PARAM_DIRECTION].getValue() == 1.f;
+            prob = params[PARAM_DIRECTION].getValue();
+        if (prob != m_directionGenerator.getProbability())
+            m_directionGenerator.setProbability(prob);
+        bool directionUp = !m_directionGenerator.generate(); // We want to go up if generator returns false.
 
         // Set Backtracking
         auto backtracking = params[PARAM_BACKTRACKING].getValue() == 1.f;
@@ -311,7 +314,7 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
     addChild(createLightCentered<LargeLight<GreenLight>>(mm2px(Vec(panelWidth/2 - 10, 10 + 4.5 * 10)), module, RaagSequencer::LIGHT_TRIGGER));
     addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 + 10, 10 + 4.5 * 10)), module, RaagSequencer::IN_TRIGGER));
     // Direction
-    addParam(createParamCentered<CKSS>(mm2px(Vec(panelWidth/2 - 10, 10 + 6 * 10)), module, RaagSequencer::PARAM_DIRECTION));
+    addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(panelWidth/2 - 10, 10 + 6 * 10)), module, RaagSequencer::PARAM_DIRECTION));
     addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 + 10, 10 + 6 * 10)), module, RaagSequencer::IN_DIRECTION));
     // Reset
     addParam(createParamCentered<LEDBezel>(mm2px(Vec(panelWidth/2 - 10, 10 + 7.5 * 10)), module, RaagSequencer::PARAM_RESET));
