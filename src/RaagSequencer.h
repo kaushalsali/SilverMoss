@@ -45,6 +45,7 @@ public:
         ENUMS(LIGHT_AVROHA_SA, numArohaOutputPorts * numLightColors),
         LIGHT_TRIGGER,
         LIGHT_RESET,
+        LIGHT_BACKTRACKING,
         NUM_LIGHTS,
     };
 

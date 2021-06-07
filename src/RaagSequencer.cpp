@@ -95,12 +95,10 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
             prob = std::max(std::min(1.f, inputs[IN_DIRECTION].getVoltage()/10.f), 0.f);
         else
             prob = params[PARAM_DIRECTION].getValue();
+//        DEBUG("----------------------%f", prob);
         if (prob != m_directionGenerator.getProbability())
             m_directionGenerator.setProbability(prob);
         bool directionUp = !m_directionGenerator.generate(); // We want to go up if generator returns false.
-
-        // Set Backtracking
-        auto backtracking = params[PARAM_BACKTRACKING].getValue() == 1.f;
 
         // Update lights before stepping
         auto currentNote = m_raagEngine.getCurrentNote();
@@ -302,27 +300,28 @@ RaagSequencerWidget::RaagSequencerWidget(RaagSequencer* module) {
     }
 
     // Control Section
-    // Octave Range
-    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2, 10 + 0.5 * 10)), module, RaagSequencer::PARAM_TRANSPOSE));
-    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 - 8, 10 + 2 * 10)), module, RaagSequencer::PARAM_OCTAVE_MIN));
-    // Transpose
-    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 + 8, 10 + 2 * 10)), module, RaagSequencer::PARAM_OCTAVE_MAX));
-    // Backtracking
-    addParam(createParamCentered<CKSS>(mm2px(Vec(panelWidth/2, 10 + 3.5 * 10)), module, RaagSequencer::PARAM_BACKTRACKING));
-    // Trigger
-    addParam(createParamCentered<LEDBezel>(mm2px(Vec(panelWidth/2 - 10, 10 + 4.5 * 10)), module, RaagSequencer::PARAM_TRIGGER));
-    addChild(createLightCentered<LargeLight<GreenLight>>(mm2px(Vec(panelWidth/2 - 10, 10 + 4.5 * 10)), module, RaagSequencer::LIGHT_TRIGGER));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 + 10, 10 + 4.5 * 10)), module, RaagSequencer::IN_TRIGGER));
     // Direction
-    addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(panelWidth/2 - 10, 10 + 6 * 10)), module, RaagSequencer::PARAM_DIRECTION));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 + 10, 10 + 6 * 10)), module, RaagSequencer::IN_DIRECTION));
+    addParam(createParamCentered<RoundBlackKnob>(mm2px(Vec(panelWidth/2 - 25, 10 + 3.5 * 10)), module, RaagSequencer::PARAM_DIRECTION));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 - 25, 10 + 1.5 * 10)), module, RaagSequencer::IN_DIRECTION));
+    // Trigger (Step)
+    addParam(createParamCentered<LEDBezel>(mm2px(Vec(panelWidth/2 - 7.75, 10 + 4 * 10)), module, RaagSequencer::PARAM_TRIGGER));
+    addChild(createLightCentered<LargeLight<GreenLight>>(mm2px(Vec(panelWidth/2 - 7.75, 10 + 4 * 10)), module, RaagSequencer::LIGHT_TRIGGER));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 - 7.75, 10 + 2 * 10)), module, RaagSequencer::IN_TRIGGER));
     // Reset
-    addParam(createParamCentered<LEDBezel>(mm2px(Vec(panelWidth/2 - 10, 10 + 7.5 * 10)), module, RaagSequencer::PARAM_RESET));
-    addChild(createLightCentered<LargeLight<GreenLight>>(mm2px(Vec(panelWidth/2 - 10, 10 + 7.5 * 10)), module, RaagSequencer::LIGHT_RESET));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 + 10, 10 + 7.5 * 10)), module, RaagSequencer::IN_RESET));
+    addParam(createParamCentered<LEDBezel>(mm2px(Vec(panelWidth/2 + 7.75, 10 + 4 * 10)), module, RaagSequencer::PARAM_RESET));
+    addChild(createLightCentered<LargeLight<GreenLight>>(mm2px(Vec(panelWidth/2 + 7.75, 10 + 4 * 10)), module, RaagSequencer::LIGHT_RESET));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 + 7.75, 10 + 2 * 10)), module, RaagSequencer::IN_RESET));
     // Num Steps
-    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 - 10, 10 + 9 * 10)), module, RaagSequencer::PARAM_NUM_STEPS));
-    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 + 10, 10 + 9 * 10)), module, RaagSequencer::IN_NUM_STEPS));
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 + 25, 10 + 3.5 * 10)), module, RaagSequencer::PARAM_NUM_STEPS));
+    addInput(createInputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2 + 25, 10 + 1.5 * 10)), module, RaagSequencer::IN_NUM_STEPS));
+    // Backtracking
+    addParam(createParamCentered<LEDBezel>(mm2px(Vec(panelWidth/2, 10 + 5.5 * 10)), module, RaagSequencer::PARAM_BACKTRACKING));
+    addChild(createLightCentered<LargeLight<GreenLight>>(mm2px(Vec(panelWidth/2, 10 + 5.5 * 10)), module, RaagSequencer::LIGHT_BACKTRACKING));
+    // Octave Range
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 + 20, 10 + 7 * 10)), module, RaagSequencer::PARAM_OCTAVE_MAX));
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2 - 20, 10 + 7 * 10)), module, RaagSequencer::PARAM_OCTAVE_MIN));
+    // Transpose
+    addParam(createParamCentered<RoundBlackSnapKnob>(mm2px(Vec(panelWidth/2, 10 + 8 * 10)), module, RaagSequencer::PARAM_TRANSPOSE));
     // V/OCT
-    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2, 10 + 10.5 * 10)), module, RaagSequencer::OUT_VOCT));
+    addOutput(createOutputCentered<PJ301MPort>(mm2px(Vec(panelWidth/2, 10 + 10 * 10)), module, RaagSequencer::OUT_VOCT));
 }
