@@ -3,12 +3,23 @@
 //
 
 #include "RandomBooleanGenerator.h"
+#ifdef ARCH_WIN
+#include <ctime>
+#endif
 
+#ifdef ARCH_WIN
+RandomBooleanGenerator::RandomBooleanGenerator(float probability/*=0.5*/) :
+        m_randomGenerator(time(0)),
+        m_bernoulliDist(probability)
+{
+}
+#else
 RandomBooleanGenerator::RandomBooleanGenerator(float probability/*=0.5*/) :
         m_randomGenerator(m_randomSeedGen()),
         m_bernoulliDist(probability)
 {
 }
+#endif
 
 RandomBooleanGenerator::RandomBooleanGenerator(unsigned seed, float probability/*=0.5*/) :
         m_randomGenerator(seed),
