@@ -19,7 +19,9 @@ public:
     bool generate();
 
 private:
-    std::random_device m_randomSeedGen;
+	#ifndef ARCH_WIN
+	    std::random_device m_randomSeedGen;
+	#endif
     std::mt19937 m_randomGenerator;
     std::bernoulli_distribution m_bernoulliDist;
 };
