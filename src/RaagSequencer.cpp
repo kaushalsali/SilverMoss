@@ -60,6 +60,14 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
         setAvrohaLightBrightness(currentNote, 1.f, 1);
     }
 
+    // Backtrack
+    if (m_trigBacktrackButton.process(params[PARAM_BACKTRACKING].getValue())) {
+        m_backtrackToggleState = !m_backtrackToggleState;
+        m_backtrackLightBrightness = m_backtrackToggleState ? 1.f : 0.f;
+        DEBUG("----------------------%d", m_backtrackToggleState);
+        lights[LIGHT_BACKTRACKING].setBrightness(m_backtrackLightBrightness);
+    }
+
     // Trigger
     // if Trigger button pressed or received from CV port
     if (m_trigTriggerButton.process(params[PARAM_TRIGGER].getValue()) || (inputs[IN_TRIGGER].isConnected() && m_trigTriggerInput.process(inputs[IN_TRIGGER].getVoltage()))) {
@@ -117,7 +125,7 @@ void RaagSequencer::process(const Module::ProcessArgs &args) {
             auto stepUp = directionUp;
             // If backtracking, and there's no connection in current direction, we try to take 1 step in the reverse direction
             //TODO: Improve logic. Perhaps an we could do more than one reverse steps ?? Think. Is this necessary?
-            auto numTries = backtracking ? 2 : 1;
+            auto numTries = m_backtrackToggleState ? 2 : 1;
             auto success = false;
             while (!success && numTries) {
                 if (stepUp)
