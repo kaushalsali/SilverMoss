@@ -3,12 +3,23 @@
 //
 
 #include "UniformRandomIntegerGenerator.h"
+#ifdef ARCH_WIN
+#include <ctime>
+#endif
 
+#ifdef ARCH_WIN
+UniformRandomIntegerGenerator::UniformRandomIntegerGenerator(int min /*=std::numeric_limits<int>::min()*/, int max /*=std::numeric_limits<int>::max()*/) :
+    m_randomGenerator(time(0)),
+    m_uniformDist(min, max)
+{
+}
+#else
 UniformRandomIntegerGenerator::UniformRandomIntegerGenerator(int min /*=std::numeric_limits<int>::min()*/, int max /*=std::numeric_limits<int>::max()*/) :
     m_randomGenerator(m_randomSeedGen()),
     m_uniformDist(min, max)
 {
 }
+#endif
 
 UniformRandomIntegerGenerator::UniformRandomIntegerGenerator(unsigned seed, int min /*=std::numeric_limits<int>::min()*/, int max /*=std::numeric_limits<int>::max()*/) :
     m_randomGenerator(seed),
