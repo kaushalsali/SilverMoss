@@ -25,8 +25,8 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="329.92959"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="350.83971"
      inkscape:cy="216.28569"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
@@ -36,14 +36,14 @@
      inkscape:snap-page="true"
      inkscape:bbox-nodes="false"
      inkscape:snap-bbox-edge-midpoints="false"
-     inkscape:window-width="2495"
-     inkscape:window-height="1294"
+     inkscape:window-width="1440"
+     inkscape:window-height="856"
      inkscape:window-x="0"
      inkscape:window-y="1"
      inkscape:window-maximized="0"
      inkscape:snap-bbox-midpoints="true"
      inkscape:snap-nodes="false"
-     showguides="false"
+     showguides="true"
      inkscape:measure-start="187.143,450.714"
      inkscape:measure-end="772.143,452.143">
     <inkscape:grid
@@ -54,6 +54,11 @@
        orientation="0,1"
        id="guide820"
        inkscape:locked="false" />
+    <sodipodi:guide
+       position="152.61092,148.33461"
+       orientation="0,1"
+       id="guide953"
+       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
@@ -63,7 +68,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -780,6 +785,20 @@
        id="path2066"
        d="m 126.20627,200.10987 c 0,6.01765 0,6.138 0,6.138"
        style="fill:none;stroke:#000000;stroke-width:0.111;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none" />
+    <rect
+       y="157.66068"
+       x="153.45526"
+       height="146.24039"
+       width="9.4129457"
+       id="rect949"
+       style="opacity:0.994;fill:#b3b3b3;fill-opacity:0;stroke:#020200;stroke-width:0.21311678;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.95121951" />
+    <rect
+       style="opacity:0.994;fill:#b3b3b3;fill-opacity:0;stroke:#020200;stroke-width:0.21484143;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.95121951"
+       id="rect951"
+       width="9.4112215"
+       height="148.64409"
+       x="40.214478"
+       y="156.78073" />
   </g>
   <g
      inkscape:groupmode="layer"
