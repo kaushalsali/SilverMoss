@@ -45,6 +45,7 @@ public:
         ENUMS(LIGHT_AVROHA_SA, numArohaOutputPorts * numLightColors),
         LIGHT_TRIGGER,
         LIGHT_RESET,
+        LIGHT_BACKTRACKING,
         NUM_LIGHTS,
     };
 
@@ -75,6 +76,8 @@ private:
     dsp::SchmittTrigger m_trigTriggerButton;
     dsp::SchmittTrigger m_trigResetInput;
     dsp::SchmittTrigger m_trigResetButton;
+    dsp::SchmittTrigger m_trigBacktrackButton;
+    bool m_backtrackToggleState = false;
     std::array<Note, numArohaInputPorts> m_arohaInputLastNotes;
     std::array<Note, numArohaInputPorts> m_avrohaInputLastNotes;
     std::array<int, numArohaOutputPorts> m_arohaNumInputConnections;
@@ -82,6 +85,7 @@ private:
     bool m_isFirstStep = true;
     float m_resetLightBrightness = 0.f;
     float m_triggerLightBrightness = 0.f;
+    float m_backtrackLightBrightness = 0.f;
     RandomBooleanGenerator m_directionGenerator;
 
 };
