@@ -18,7 +18,9 @@ public:
     void setRange(int min, int max);
 
 private:
-    std::random_device m_randomSeedGen;
+    #ifndef ARCH_WIN
+    	std::random_device m_randomSeedGen;
+    #endif
     std::mt19937 m_randomGenerator;
     std::uniform_int_distribution<> m_uniformDist;
 };
